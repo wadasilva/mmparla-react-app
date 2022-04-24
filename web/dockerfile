@@ -1,0 +1,18 @@
+FROM node:15.14.0-alpine3.13
+RUN apk update && apk add sudo
+RUN addgroup app && adduser -S -G app app
+
+#Installing curl to test API endpoints
+RUN apk --no-cache add curl
+
+RUN mkdir /app && chown app:app /app
+# RUN npm i nodemon -g --save-dev
+
+USER app
+WORKDIR /app
+COPY --chown=app:app package*.json .
+RUN npm install
+COPY --chown=app:app . .
+ENV PORT=80 NODE_ENV=development
+EXPOSE 80
+CMD ["npm", "start"]

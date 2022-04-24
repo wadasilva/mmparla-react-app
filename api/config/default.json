@@ -1,0 +1,17 @@
+{
+    "name": "My Express App",
+    "db": "mongodb://db/mmparla",
+    "webAppUrl": "http://wdasilva.ddns.net",
+    "paths": {
+        "temp": "./temp/",
+        "logs": "./logs/"
+    },
+    "upload": {
+        "maxSize": 5242880,
+        "unit": "byte"
+    },
+    "emailService": {
+        "smtpHost": "smtp.gmail.com",
+        "smtpPort": 465
+    }
+}

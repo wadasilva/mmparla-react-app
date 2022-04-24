@@ -1,0 +1,27 @@
+FROM node:15.14.0-alpine3.13
+RUN apk update && apk add sudo
+RUN addgroup app && adduser -S -G app app
+
+#Enable PING for rootless users
+#RUN echo net.ipv4.ping_group_range = 0 2147483647 > /etc/sysctl.d/99-allow-ping.conf
+
+#Point api-montajesparla.betabuild.dev to the same host
+#RUN echo 127.0.0.1 api-montajesparla.betabuild.dev >> /etc/hosts
+
+#install vips required for sharp (webp image converter) to work correctly
+#RUN apk add --update --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community --repository http://dl-3.alpinelinux.org/alpine/edge/main vips-dev
+# RUN /bin/sh -c "apk add --update --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community --repository http://dl-3.alpinelinux.org/alpine/edge/main vips-dev"
+RUN sudo npm install -g sharp
+RUN npm i nodemon -g --save-dev
+
+RUN mkdir /app && chown app:app /app
+USER app
+WORKDIR /app
+COPY --chown=app:app package*.json .
+RUN npm install
+
+COPY --chown=app:app . .
+ENV app_smtp_password=
+ENV app_smtp_user=
+EXPOSE 3000
+CMD ["nodemon", "-L", "--watch", ".", "index.js", "--host", "0.0.0.0", "--disableHostCheck"]

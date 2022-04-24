@@ -1,0 +1,7 @@
+{
+    "name": "My Express App - Development",
+    "emailService": {
+        "smtpHost": "smtp.gmail.com",
+        "smtpPort": 465
+    }
+}

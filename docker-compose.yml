@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+
+  web:
+    image: mmparla_web
+    container_name: mmparla_web
+    build: ./web
+    extra_hosts:
+      - "wdasilva.ddns.net:127.0.0.1"
+    ports:
+      - 80:80
+    #entrypoint: ["node", "index.js", "--host", "0.0.0.0", "--disableHostCheck"]
+    volumes:
+      - ./web:/app
+
+  api:
+    image: mmparla_api
+    container_name: mmparla_api
+    build: ./api
+    extra_hosts:
+      - "wdasilva-back.ddns.net:127.0.0.1"
+    ports:
+      - 3000:3000
+    #entrypoint: ["node", "index.js", "--host", "0.0.0.0", "--disableHostCheck"]
+    volumes:
+      - ./api:/app
+      - node_modules:/app/node_modules
+      # - app-data:/app/temp
+    environment:
+      app_smtp_user: /run/secrets/smtp_user
+      app_smtp_password: /run/secrets/smtp_password
+    secrets:
+      - smtp_user
+      - smtp_password
+
+  db:
+    image: mmparla_db
+    container_name: mmparla_db
+    build:
+      context: .
+      dockerfile: ./api/dockerfile.mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mmparla:/data/db
+
+volumes:
+  mmparla:
+  node_modules: # app-data:
+
+secrets:
+  smtp_user:
+    file: ./smtp_user.txt
+  smtp_password:
+    file: ./smtp_password.txt
