@@ -1,0 +1,5 @@
+{
+    "name": "My Express App",
+    "apiUrl": "http://wdasilva-back.ddns.net:3000/api",
+    "backendUrl": "http://mmparla_api:3000/api"
+}
