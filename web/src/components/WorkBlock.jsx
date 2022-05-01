@@ -1,6 +1,61 @@
-import React from 'react';
+import React, { createRef, useEffect, useRef, useState } from 'react';
+import { getPhotos } from '../services/photoService';
+import config from '../config/config.json';
 
 const WorkBlock = () => {
+    const [images, setImages] = useState([]);
+    const [selectedSlideItem, setSelectedSlideItem] = useState(0);
+
+    useEffect(() => {
+        async function fetchData() {
+            const { data } = await getPhotos();
+            setImages(getImages(data));
+        }
+    
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        document.getElementById(`carrousel-item-${selectedSlideItem}`)?.scrollIntoView();
+    }, [selectedSlideItem]);
+
+
+    function getImages(data) {
+        let images = [];
+
+        if (data) {
+            images = data.map(image => {
+                return {
+                    id: image.id,
+                    url: `${config.apiUrl}/${image.url}`,
+                    description: image.description,
+                    extention: image.extention,
+                    breakpoints: image.breakpoints.map(breakpoint => {
+                        return {
+                            extention: breakpoint.extention,
+                            breakpoint: breakpoint.images.map(image => `${config.apiUrl}/${image.url} ${image.width}w`).join(',')
+                        }
+                    }).sort((a, b) => {
+                        if (a.extention > b.extention) return -1;
+                        if (a.extention < b.extention) return 1;
+    
+                        return 0;
+                    })
+                };
+            });
+        }
+    
+        return images;
+    }
+    
+    const handleCarrouselClick = (direction) =>  {
+        if (direction === 'prev' && selectedSlideItem > 0) {
+            setSelectedSlideItem(selectedSlideItem - 1);
+        } else if (direction === 'next' && selectedSlideItem < images.length - 1) {
+            setSelectedSlideItem(selectedSlideItem + 1);
+        }            
+    }
+
     return (
         <section id="work-block" className="block block--light-gray">
             <header className="block__header aos-overflow-hidden">
@@ -9,101 +64,46 @@ const WorkBlock = () => {
             <div className="carrousel container">
                 {/* carrousel slides */}
                 <div className="carrousel__slides">
-                    <div id="item-1" className="carrousel__slides-item">
-                        <img src="/images/works/work-01.jpg" alt="" />
-                    </div>
-                    <div id="item-2" className="carrousel__slides-item">
-                        <img src="/images/works/work-02.jpg" alt="" />
-                    </div>
-                    <div id="item-3" className="carrousel__slides-item">
-                        <img src="/images/works/work-03.jpg" id="item-3" alt="" />
-                    </div>
-                    <div id="item-4" className="carrousel__slides-item">
-                        <img src="/images/works/work-04.jpg" id="item-4" alt="" />
-                    </div>
-                    <div id="item-5" className="carrousel__slides-item">
-                        <img src="/images/works/work-05.jpg" id="item-5"  alt="" />
-                    </div>
-                    <div id="item-6" className="carrousel__slides-item">
-                        <img src="/images/works/work-06.jpg" id="item-5"  alt="" />
-                    </div>
-                    <div id="item-7" className="carrousel__slides-item">
-                        <img src="/images/works/work-07.jpg" id="item-7"  alt="" />
-                    </div>
-                    <div id="item-8" className="carrousel__slides-item">
-                        <img src="/images/works/work-08.jpg" id="item-8"  alt="" />
-                    </div>
-                    <div id="item-9" className="carrousel__slides-item">
-                        <img src="/images/works/work-09.jpg" id="item-9"  alt="" />
-                    </div>
-                    <div id="item-10" className="carrousel__slides-item">
-                        <img src="/images/works/work-10.jpg" id="item-10" alt="" />
-                    </div>
+                    { images.map((image, index) => {
+                        return (
+                            <div key={index} id={`carrousel-item-${index}`} className="carrousel__slides-item">
+                                <picture className="carrousel__item">
+                                    { image.breakpoints.map((source) => {
+                                        return <source key={`${index}-${source.extention}`} type={`image/${source.extention}`} srcSet={source.breakpoint} />
+                                    }) }
+
+                                    <img className="carrousel__item" key={image.id} src={image.url} alt={image.description} />
+                                </picture>
+                            </div>
+                        )
+                    })}
                 </div>
             
                 {/* carrousel navgator */}
                 <div className="carrousel__navigator">
-                    <a href="#thumbnail-8" className="slider__chevron">
+                    <a href={`#slider-item-${ selectedSlideItem > 0 ? selectedSlideItem - 1 : selectedSlideItem}`} className="slider__chevron" onClick={ () => handleCarrouselClick('prev') }>
                         <img src="/images/left-arrow.png" alt="" />
                     </a>
                     
                     <div className="slider__thumbnails">
-                        <a href="#item-1">
-                            <div id="item-1">
-                                <img src="/images/works/work-01.jpg" alt="" />
-                            </div>
-                        </a>
-                        <a href="#item-2">
-                            <div id="item-2">
-                                <img src="/images/works/work-02.jpg" alt="" />
-                            </div>
-                        </a>
-                        <a href="#item-3">
-                            <div id="item-3">
-                                <img src="/images/works/work-03.jpg" id="item-3" alt="" />
-                            </div>
-                        </a>
-                        <a href="#item-4">
-                            <div id="item-4">
-                                <img src="/images/works/work-04.jpg" id="item-4" alt="" />
-                            </div>
-                        </a>
-                    
-                        <a href="#item-5">
-                            <div id="item-5">
-                                <img src="/images/works/work-05.jpg" id="item-5"  alt="" />
-                            </div>
-                        </a>
-                        <a href="#item-6">
-                            <div id="item-6">
-                                <img src="/images/works/work-06.jpg"  id="item-6"  alt="" />
-                            </div>
-                        </a>
-                        <a href="#item-7">
-                            <div id="item-7">
-                                <img src="/images/works/work-07.jpg" id="item-7"  alt="" />
-                            </div>
-                        </a>
-                        <a href="#item-8">
-                            <div id="thumbnail-8">
-                                <img src="/images/works/work-08.jpg" id="item-8"  alt="" />
-                            </div>
-                        </a>
-                        <a href="#item-9">
-                            <div id="item-9">
-                                <img src="/images/works/work-09.jpg" id="item-9"  alt="" />
-                            </div>
-                        </a>
-                        <a href="#item-10">
-                            <div id="item-10">
-                                <img src="/images/works/work-10.jpg" id="item-10" alt="" />
-                            </div>
-                        </a>                                
-                 </div>
-    
-                 <a href="#item-test" className="slider__chevron">
-                    <img src="/images/right-arrow.png" alt="" />
-                </a>
+                        { images.map((image, index) => {
+                            return (
+                                <a key={index} href={`#carrousel-item-${index}`} className={selectedSlideItem === index ? 'slider-item-active' : '' } onClick={ () => setSelectedSlideItem(index) }>
+                                    <div id={`slider-item-${index}`}>
+                                        <picture>
+                                            { image.breakpoints.map((source) => <source key={source.breakpoint} type={`image/${source.extention}`} srcSet={source.breakpoint} />) }
+
+                                            <img key={index} src={image.url} alt={image.description} />
+                                        </picture>
+                                    </div>
+                                </a>        
+                            )
+                        }) }
+                    </div>
+        
+                    <a href={`#slider-item-${ selectedSlideItem < images.length - 1 ? selectedSlideItem + 1 : selectedSlideItem }`} className="slider__chevron" onClick={ () => handleCarrouselClick('next') }>
+                        <img src="/images/right-arrow.png" alt="" />
+                    </a>
                 </div>
             </div>
         </section>

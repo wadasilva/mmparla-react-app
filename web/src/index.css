@@ -466,7 +466,7 @@ a {
   width: 100%;
 }
 
-.carrousel__slides-item > img {
+.carrousel__slides-item  .carrousel__item {
   border-radius: 5px;
   width: 100%;
 }
@@ -498,6 +498,11 @@ a {
   display: flex;
   max-width: 100px;
   width: 100px;
+}
+
+.slider-item-active {
+  border: 2px solid var(--color-primary);
+  border-radius: 5px;
 }
 
 .slider__chevron {
