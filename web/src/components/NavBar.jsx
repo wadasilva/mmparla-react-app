@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { HashLink } from 'react-router-hash-link';
+import {Link} from 'react-router-dom';
 
 const NavBar = () => {
   const [toggled, setToggled] = useState(0);
@@ -20,29 +22,22 @@ const NavBar = () => {
         </svg>
         <ul className="list nav__list collapsible__content">
           <li className="nav__item">
-            <a href="#about-block" className="link">
-              Sobre nosotros
-            </a>
+            <HashLink className="link" to={'/#about-block'}>Sobre nosotros</HashLink>
           </li>
           <li className="nav__item">
-            <a href="#services-block" className="link">
-              servicios
-            </a>
+            <HashLink className="link" to={'/#services-block'}>servicios</HashLink>
           </li>
           <li className="nav__item">
-            <a href="#work-block" className="link">
-              galeria
-            </a>
+            <HashLink className="link" to={'/#work-block'}>galeria</HashLink>
           </li>
           <li className="nav__item">
-            <a href="#testimonial-block" className="link">
-              testimonios
-            </a>
+            <HashLink className="link" to={'/#testimonial-block'}>testimonios</HashLink>
           </li>
           <li className="nav__item">
-            <a href="#contact-block" className="link">
-              contacto
-            </a>
+            <HashLink className="link" to={'/#contact-block'}>contacto</HashLink>
+          </li>
+          <li className="nav__item">
+            <Link className="link" to={'/organizations'}>clientes</Link>
           </li>
         </ul>
       </nav>
