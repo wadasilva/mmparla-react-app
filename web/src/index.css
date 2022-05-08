@@ -171,6 +171,10 @@ a {
   background: #f79661;
 }
 
+.btn--primary:disabled {
+  background: #f6c5ab;
+}
+
 @media screen and (min-width: 1024px) {
   .btn {
     width: 210px;
@@ -913,4 +917,19 @@ a {
 /* Animations */
 .aos-overflow-hidden {
   overflow-x: hidden;
+}
+
+/* File Upload */
+label.kiHXWb {
+  min-width: 100px;
+}
+
+/* forms */
+.form-group {
+  margin-top: 20px;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 80%;
 }
