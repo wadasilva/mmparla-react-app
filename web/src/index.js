@@ -3,8 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
-import { Routes, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Site from "./components/Site";
 import Organization from "./components/Organization";
 
@@ -14,8 +13,8 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>
+          <Route index element={<Site />} />
           <Route path="/organizations" element={<Organization />} />
-          <Route path="/" element={<Site />} />
         </Route>
       </Routes>
     </BrowserRouter>
