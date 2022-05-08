@@ -4,6 +4,7 @@ import * as organizationService from "../services/organizationService";
 import Input from "./common/input";
 import InputUpload from "./common/InputUpload";
 import Form from "./common/form";
+import logger from "../services/logService";
 
 const fileTypes = ["GIF", "JPEG", "JPG", "TIFF", "PNG", "WEBP", "BMP"];
 
@@ -34,7 +35,7 @@ class OrganizationForm extends Form {
       this.setState({ data });
       this.validateFileUpload();
     } catch (error) {
-      console.log(`error: ${error}`);
+      logger.log(error);
     }
   }
 
@@ -64,7 +65,7 @@ class OrganizationForm extends Form {
   };
 
   handleSizeError = (file) => {
-    console.log(this.state.file);
+    
   };
 
   validateFileUpload = () => {
@@ -94,10 +95,8 @@ class OrganizationForm extends Form {
   doSubmit = async () => {
     try {
       const result = await organizationService.addOrganization(this.state.data);
-      console.log("Request finished!");
-      console.log(result);
     } catch (error) {
-      console.log(error);
+      logger.log(error);
     }
   };
 

@@ -6,6 +6,10 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Site from "./components/Site";
 import Organization from "./components/Organization";
+import "react-toastify/dist/ReactToastify.css";
+import logger from "./services/logService";
+
+logger.init();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

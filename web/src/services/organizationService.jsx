@@ -1,4 +1,4 @@
-import http from 'axios';
+import http from './httpService';
 import config from '../config/config.json';
 
 export function getOrganization() {
