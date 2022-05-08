@@ -28,6 +28,10 @@ class OrganizationForm extends Form {
   };
 
   async componentDidUpdate() {
+    this.updateLogoProperty();
+  }
+
+  updateLogoProperty = async () => {
     const { data, file } = { ...this.state };
     try {
       data.logo = await this.toBase64(file);
@@ -37,7 +41,7 @@ class OrganizationForm extends Form {
     } catch (error) {
       logger.log(error);
     }
-  }
+  };
 
   render() {
     return (
@@ -52,7 +56,6 @@ class OrganizationForm extends Form {
           label="Logo"
           types={fileTypes}
           handleChange={this.handleUploadChange}
-          onSizeError={this.handleSizeError}
           error={this.state.errors.logo}
         />
         {this.renderButton("Guardar")}
@@ -62,10 +65,6 @@ class OrganizationForm extends Form {
 
   handleUploadChange = (file) => {
     this.setState({ file });
-  };
-
-  handleSizeError = (file) => {
-    
   };
 
   validateFileUpload = () => {
@@ -94,7 +93,7 @@ class OrganizationForm extends Form {
 
   doSubmit = async () => {
     try {
-      const result = await organizationService.addOrganization(this.state.data);
+      await organizationService.addOrganization(this.state.data);
     } catch (error) {
       logger.log(error);
     }

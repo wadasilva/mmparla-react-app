@@ -27,7 +27,7 @@ const TestimonialsBlock = () => {
           return (
             <div key={item._id} className="media testimonial">
               <div className="media__image">
-                <img src={`data:image/${item.extention};base64,${item.photo}`} alt="Profile picture" />
+                <img src={`data:image/${item.extention};base64,${item.photo}`} alt="Witness" />
               </div>
               <div className="media__brand">
                 <img src="/images/icon-11.png" alt="Logo Canoil" />

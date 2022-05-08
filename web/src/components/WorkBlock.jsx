@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getPhotos } from '../services/photoService';
 import config from '../config/config.json';
 

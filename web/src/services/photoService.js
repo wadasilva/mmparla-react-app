@@ -1,6 +1,5 @@
-import http from 'axios';
-import config from '../config/config.json';
+import http from "axios";
 
 export function getPhotos() {
-    return http.get(`${config.apiUrl}/galleries`);
+  return http.get("/galleries");
 }
