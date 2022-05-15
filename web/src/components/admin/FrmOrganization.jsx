@@ -1,41 +1,48 @@
 import Joi from "joi-browser";
-import config from "../config/config.json";
-import * as organizationService from "../services/organizationService";
-import Input from "./common/input";
-import InputUpload from "./common/InputUpload";
-import Form from "./common/form";
-import logger from "../services/logService";
+import config from "../../config/config.json";
+import * as organizationService from "../../services/organizationService";
+import Input from "../common/input";
+import InputUpload from "../common/InputUpload";
+import Form from "../common/form";
+import logger from "../../services/logService";
+import utils from "../../utils/uploadUtils";
 
 const fileTypes = ["GIF", "JPEG", "JPG", "TIFF", "PNG", "WEBP", "BMP"];
 
-class OrganizationForm extends Form {
-  state = {
-    data: { name: "", logo: "", extention: "" },
+class FrmOrganization extends Form {
+  initialState = {
+    data: { name: "", logo: {} },
     errors: {},
     file: null,
   };
 
+  state = this.initialState;
+
   schema = {
     name: Joi.string().required().min(3).max(255).label("Name"),
-    logo: Joi.binary()
+    logo: Joi.object({
+      image: Joi.binary()
       .encoding("base64")
       .min(1)
       .max(config.upload.maxSize)
       .label("Logo"),
-    extention: Joi.string()
+      format: Joi.string()
       .required()
-      .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions"),
+      .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions")
+    })
   };
 
-  async componentDidUpdate() {
-    this.updateLogoProperty();
+  async componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.file !== this.state.file) {
+      this.updateLogoProperty();
+    }
   }
 
   updateLogoProperty = async () => {
     const { data, file } = { ...this.state };
     try {
-      data.logo = await this.toBase64(file);
-      data.extention = file.name.split(".").pop().toLowerCase();
+      data.logo.image = await utils.toBase64(file);
+      data.logo.format = utils.getFileExtention(file.name);
       this.setState({ data });
       this.validateFileUpload();
     } catch (error) {
@@ -68,32 +75,22 @@ class OrganizationForm extends Form {
   };
 
   validateFileUpload = () => {
-    const obj = { ["logo"]: this.state.data["logo"] };
+    const obj = { ["logo"]: { ["image"]: this.state.data["logo"]["image"], ["format"]: this.state.data["logo"]["format"] } };
     const schema = { ["logo"]: this.schema["logo"] };
     const { error } = Joi.validate(obj, schema);
-
     const errors = { ...this.state.errors };
+    
     if (error) errors["logo"] = error.details[0].message;
     else delete errors["logo"];
 
     this.setState({ errors });
-  };
-
-  toBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      if (!file) throw new Error("File is null");
-
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () =>
-        resolve(reader.result.toString().replace(/^data:(.*,)?/, ""));
-      reader.onerror = (error) => reject(error);
-    });
-  };
+  };  
 
   doSubmit = async () => {
     try {
       await organizationService.addOrganization(this.state.data);
+      const { data } = this.initialState;
+      this.setState({ data });
     } catch (error) {
       logger.log(error);
     }
@@ -127,4 +124,4 @@ class OrganizationForm extends Form {
   }
 }
 
-export default OrganizationForm;
+export default FrmOrganization;

@@ -173,6 +173,7 @@ a {
 
 .btn--primary:disabled {
   background: #f6c5ab;
+  pointer-events: none;
 }
 
 @media screen and (min-width: 1024px) {
@@ -191,6 +192,20 @@ a {
   height: 54px;
   outline: 0;
   padding: 2.7rem 3.5rem;
+}
+
+select.input {
+  padding: 1.6rem 3.5rem;
+}
+
+select.input option {
+  color: #878787;
+  font-family: "Myriad-Regular";
+  font-size: 1.5rem;
+}
+
+textarea.input {
+  min-height: 200px;
 }
 
 ::placeholder {
@@ -428,7 +443,6 @@ a {
 }
 
 .testimonial .media__footer-heading {
-  font-size: 2rem;
   font-size: 2rem;
   margin: 0;
 }
@@ -793,10 +807,6 @@ a {
   margin-bottom: 30px;
 }
 
-.contact__email textarea {
-  height: 200px;
-}
-
 .contact__email {
   padding-top: 100px;
 }
@@ -932,4 +942,14 @@ label.kiHXWb {
 .invalid-feedback {
   color: #dc3545;
   font-size: 80%;
+}
+
+.avatar {
+  cursor: pointer;
+  align-self: center;
+  max-width: 150px;
+  min-width: 130px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  /* pointer-events: none; */
 }

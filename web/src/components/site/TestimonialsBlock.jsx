@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getTestimonials } from "../services/testimonialService";
+import { getTestimonials } from "../../services/testimonialService";
 
 const TestimonialsBlock = () => {
   const [testimonials, setTestimonials] = useState([]);
@@ -12,7 +12,7 @@ const TestimonialsBlock = () => {
     fetchData();
   }, []);
 
-  return (
+  return (testimonials.length > 0 &&
     <section
       id="testimonial-block"
       className="block block--light-gray testimonial-block"
@@ -27,17 +27,17 @@ const TestimonialsBlock = () => {
           return (
             <div key={item._id} className="media testimonial">
               <div className="media__image">
-                <img src={`data:image/${item.extention};base64,${item.photo}`} alt="Witness" />
+                <img src={`data:image/${item.photo.format};base64,${item.photo.image}`} alt="Witness" />
               </div>
               <div className="media__brand">
-                <img src="/images/icon-11.png" alt="Logo Canoil" />
+                <img src={`data:image/${item.invitation.organization.logo.format};base64,${item.invitation.organization.logo.image}`} alt="Logo Canoil" />
               </div>
               <div className="media__body">
                 <p>{item.message}</p>
               </div>
               <div className="media__footer">
                 <h3 className="media__footer-heading">{item.firstName} {item.lastName}</h3>
-                <p>Gerente de Maisons du Monde</p>
+                <p>{item.rol}</p>
               </div>
             </div>
           );

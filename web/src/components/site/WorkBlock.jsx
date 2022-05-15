@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getPhotos } from '../services/photoService';
-import config from '../config/config.json';
+import { getPhotos } from '../../services/photoService';
+import config from '../../config/config.json';
 
 const WorkBlock = () => {
     const [images, setImages] = useState([]);

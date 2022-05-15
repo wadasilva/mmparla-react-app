@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { HashLink } from 'react-router-hash-link';
 import {Link} from 'react-router-dom';
 
-const NavBar = () => {
+const NavBar = (props) => {
   const [toggled, setToggled] = useState(0);
 
   return (
@@ -18,7 +18,7 @@ const NavBar = () => {
           +34 631 93 98 20
         </a>
         <svg className="icon icon--primary nav__toggler">ºº
-          <use xlinkHref="images/sprite.svg#menu"></use>
+          <use xlinkHref="/images/sprite.svg#menu"></use>
         </svg>
         <ul className="list nav__list collapsible__content">
           <li className="nav__item">

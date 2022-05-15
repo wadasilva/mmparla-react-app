@@ -1,6 +1,6 @@
 import http from "./httpService";
 
-export function getOrganization() {
+export function getOrganizations() {
   return http.get("/organizations");
 }
 

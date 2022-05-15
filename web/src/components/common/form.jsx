@@ -8,6 +8,8 @@ class Form extends Component {
   };
 
   validate = () => {
+    if (!this.schema) return null;
+    
     const options = { abortEarly: false };
     const { error } = Joi.validate(this.state.data, this.schema, options);
     if (!error) return null;
@@ -18,6 +20,8 @@ class Form extends Component {
   };
 
   validateProperty = ({ name, value }) => {
+    if (!this.schema) return null;
+
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
     const { error } = Joi.validate(obj, schema);

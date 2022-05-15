@@ -1,13 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Site from "./components/Site";
-import Organization from "./components/Organization";
-import "react-toastify/dist/ReactToastify.css";
 import logger from "./services/logService";
+import App from "./components/App";
+import Site from "./components/site/Site";
+import FrmOrganization from "./components/admin/FrmOrganization";
+import FrmInvitation from "./components/admin/FrmInvitation";
+import FrmTestimonial from "./components/admin/FrmTestimonial";
+import "react-toastify/dist/ReactToastify.css";
+import "./index.css";
 
 logger.init();
 
@@ -18,7 +20,9 @@ root.render(
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Site />} />
-          <Route path="/organizations" element={<Organization />} />
+          <Route path="/organizations" element={<FrmOrganization />} />
+          <Route path="/testimonials/invite" element={<FrmInvitation />} />
+          <Route path="/testimonial/:code" element={<FrmTestimonial />} />
         </Route>
       </Routes>
     </BrowserRouter>

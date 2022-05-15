@@ -11,8 +11,16 @@ const Organization = mongoose.model(
       min: 3,
     },
     logo: {
-      required: true,
-      type: String,
+      image: {
+        required: true,
+        type: String,
+      },
+      format: {
+        required: true,
+        min: 3,
+        max: 10,
+        type: String,
+      },
     },
     createAt: {
       type: Date,
