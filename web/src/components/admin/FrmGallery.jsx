@@ -1,15 +1,15 @@
 import React, { Component } from "react";
 import Joi from "joi-browser";
-import config from "../config/config.json";
-import utils from "../utils/uploadUtils";
-import logger from "../services/logService";
+import config from "../../config/config.json";
+import utils from "../../utils/uploadUtils";
+import logger from "../../services/logService";
 import ReactCrop from "react-image-crop";
 import Modal from "react-modal";
-import Form from "./common/form";
-import InputUpload from "./common/InputUpload";
-import Input from './common/input';
+import Form from "../common/form";
+import InputUpload from "../common/InputUpload";
+import Input from '../common/input';
 import "react-image-crop/dist/ReactCrop.css";
-import * as photoService from '../services/photoService';
+import * as photoService from '../../services/photoService';
 
 const fileTypes = ["GIF", "JPEG", "JPG", "TIFF", "PNG", "WEBP", "BMP"];
 const styles = {
@@ -32,7 +32,7 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     rowGap: "50px",
-    columGap: "10px",
+    columGap: "10px"
   },
   cropContainer: {
     display: "flex",
@@ -63,13 +63,13 @@ const styles = {
   },
 };
 
-class Gallery extends Form {
+class FrmGallery extends Form {
   constructor(props) {
     super(props);
     this.imageRef = React.createRef();
   }
 
-  state = {
+  initialState = {
     data: {
       image: "",
       description: "",
@@ -92,6 +92,8 @@ class Gallery extends Form {
     croppedImage: null,
     isModalOpen: false,
   };
+
+  state = this.initialState;
 
   schema = {
     image: Joi.binary()
@@ -147,6 +149,8 @@ class Gallery extends Form {
   doSubmit = async () => {
     try {
       await photoService.uploadPhoto(this.state.data);
+
+      this.setState(this.initialState);
     } catch (error) {
       console.log('error');
     }
@@ -348,4 +352,4 @@ class Gallery extends Form {
   }
 }
 
-export default Gallery;
+export default FrmGallery;

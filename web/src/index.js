@@ -8,7 +8,7 @@ import Site from "./components/site/Site";
 import FrmOrganization from "./components/admin/FrmOrganization";
 import FrmInvitation from "./components/admin/FrmInvitation";
 import FrmTestimonial from "./components/admin/FrmTestimonial";
-import Gallery from "./components/Gallery";
+import Gallery from "./components/admin/FrmGallery";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
