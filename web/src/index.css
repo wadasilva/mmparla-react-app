@@ -142,6 +142,10 @@ a {
   fill: var(--color-primary);
 }
 
+.icon--white {
+  fill: #FFF;
+}
+
 .icon--small {
   width: 30px;
   height: 30px;
@@ -151,7 +155,9 @@ a {
 .btn {
   border: 0;
   cursor: pointer;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: "Myriad-Regular";
   line-height: 2rem;
   margin: 1rem 0;
@@ -160,6 +166,11 @@ a {
   text-transform: uppercase;
   white-space: nowrap;
   width: 100%;
+  font-size: 1.6rem;
+}
+
+.btn:disabled {
+  pointer-events: none;
 }
 
 .btn--primary {
@@ -171,14 +182,101 @@ a {
   background: #f79661;
 }
 
+.btn--success {
+  background: green;
+  color: #fff;
+}
+
+.btn--danger {
+  background: red;
+  color: #fff;  
+}
+
+.btn--info {
+  color: #000;
+  background-color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+.btn--info:hover {
+  color: #000;
+  background-color: #31d2f2;
+  border-color: #25cff2;
+}
+
+.btn--info:disabled {
+  color: #000;
+  background-color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+.btn--info .icon {
+  fill: #000;
+}
+
 .btn--primary:disabled {
-  background: #f6c5ab;
-  pointer-events: none;
+  background: #f6c5ab;  
+}
+
+.btn--small {
+  font-size: 1.3rem;
+  margin: 0.6rem 0;
+  padding: .7rem;
+  max-width: 110px;
+  gap: 5px;
+}
+
+.btn--small > .icon--small {
+  width: 15px;
+  height: 15px;
 }
 
 @media screen and (min-width: 1024px) {
   .btn {
     width: 210px;
+  }
+}
+
+/* Action buttons */
+.action-buttons {
+  align-self: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin: 0 2rem;
+}
+
+/* Badges */
+.badge {
+  border-radius: 20px;
+  font-size: 2rem;
+  font-weight: 500;
+  padding: .5rem 2rem;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.badge--primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.badge--danger {
+  background: red;
+  color: #fff;
+}
+
+.badge--success {
+  background: green;
+  color: #fff;
+}
+
+@media screen and (min-width: 1024px) {
+  .badge {
+    font-size: 1.5rem;
   }
 }
 
@@ -552,6 +650,11 @@ textarea.input {
   }
 }
 
+/* For all blocks */
+section:nth-of-type(even).block {
+  background-color: #f8f8f8;
+}
+
 /* Hero Block */
 .main-content {
   flex: 1;
@@ -747,8 +850,9 @@ textarea.input {
 .brand-block .container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 30px;
   justify-content: center;
+  align-items: center;
 }
 
 .brands__item a {
@@ -815,6 +919,7 @@ textarea.input {
   margin-left: 0;
   margin-bottom: 0;
   margin-top: auto;
+  align-self: flex-start;
 }
 
 @media screen and (min-width: 768px) {
@@ -935,7 +1040,11 @@ label.kiHXWb {
 }
 
 /* forms */
-.form-group {
+.form-group {  
+  width: 100%;
+}
+
+.main-content .form-group {
   margin-top: 20px;
 }
 
@@ -952,4 +1061,9 @@ label.kiHXWb {
   border-radius: 50%;
   border: 2px solid var(--color-primary);
   /* pointer-events: none; */
+}
+
+/* Modal */
+.ReactModal__Content {
+  margin-top: 100px;
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getTestimonials } from "../../services/testimonialService";
+import { getTestimonials, setState as setTestimonialState } from "../../services/testimonialService";
+import TestimonialMedia from "../common/TestimonialMedia";
 
 const TestimonialsBlock = () => {
   const [testimonials, setTestimonials] = useState([]);
@@ -12,6 +13,22 @@ const TestimonialsBlock = () => {
     fetchData();
   }, []);
 
+  const onAccept = async id => updateTestimonialState(id, true);
+  const onReject = async id => updateTestimonialState(id, false);
+
+  const updateTestimonialState = async (id, accept) => {
+    const result = await setTestimonialState({ id: id, accepted: accept});
+
+    const oldTestimonials = testimonials;
+    const testimonial = oldTestimonials.filter(item => item._id === id)[0];
+    const index = oldTestimonials.indexOf(testimonial);
+    
+    testimonial.accepted = accept;    
+    oldTestimonials[index] = testimonial;
+
+    setTestimonials([...oldTestimonials]);
+  };
+
   return (testimonials.length > 0 &&
     <section
       id="testimonial-block"
@@ -23,25 +40,7 @@ const TestimonialsBlock = () => {
         </h2>
       </header>
       <div className="grid grid--1x3 container">
-        {testimonials.map((item) => {
-          return (
-            <div key={item._id} className="media testimonial">
-              <div className="media__image">
-                <img src={`data:image/${item.photo.format};base64,${item.photo.image}`} alt="Witness" />
-              </div>
-              <div className="media__brand">
-                <img src={`data:image/${item.invitation.organization.logo.format};base64,${item.invitation.organization.logo.image}`} alt="Logo Canoil" />
-              </div>
-              <div className="media__body">
-                <p>{item.message}</p>
-              </div>
-              <div className="media__footer">
-                <h3 className="media__footer-heading">{item.firstName} {item.lastName}</h3>
-                <p>{item.rol}</p>
-              </div>
-            </div>
-          );
-        })}        
+        {testimonials.map((item) => <TestimonialMedia key={item._id} testimonial={item} isAdmin={true} onAccept={ () => onAccept(item._id) } onReject={ () => onReject(item._id) } />)}  
       </div>
     </section>
   );

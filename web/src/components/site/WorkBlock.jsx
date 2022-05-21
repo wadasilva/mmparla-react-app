@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getPhotos } from '../../services/photoService';
 import config from '../../config/config.json';
+import SliderThumbnail from '../common/SliderThumbnail';
 
 const WorkBlock = () => {
     const [images, setImages] = useState([]);
@@ -56,7 +57,7 @@ const WorkBlock = () => {
         }            
     }
 
-    return (
+    return (images.length > 0 &&
         <section id="work-block" className="block block--light-gray">
             <header className="block__header aos-overflow-hidden">
                 <h2 className="block__heading" data-aos="fade-up">Nuestros trabajos</h2>
@@ -68,9 +69,7 @@ const WorkBlock = () => {
                         return (
                             <div key={index} id={`carrousel-item-${index}`} className="carrousel__slides-item">
                                 <picture className="carrousel__item">
-                                    { image.breakpoints.map((source) => {
-                                        return <source key={`${index}-${source.extention}`} type={`image/${source.extention}`} srcSet={source.breakpoint} />
-                                    }) }
+                                    { image.breakpoints.map((source) => <source key={`${index}-${source.extention}`} type={`image/${source.extention}`} srcSet={source.breakpoint} />) }
 
                                     <img className="carrousel__item" key={image.id} src={image.url} alt={image.description} />
                                 </picture>
@@ -86,19 +85,7 @@ const WorkBlock = () => {
                     </a>
                     
                     <div className="slider__thumbnails">
-                        { images.map((image, index) => {
-                            return (
-                                <a key={index} href={`#carrousel-item-${index}`} className={selectedSlideItem === index ? 'slider-item-active' : '' } onClick={ () => setSelectedSlideItem(index) }>
-                                    <div id={`slider-item-${index}`}>
-                                        <picture>
-                                            { image.breakpoints.map((source) => <source key={source.breakpoint} type={`image/${source.extention}`} srcSet={source.breakpoint} />) }
-
-                                            <img key={index} src={image.url} alt={image.description} />
-                                        </picture>
-                                    </div>
-                                </a>        
-                            )
-                        }) }
+                        { images.map((image, index) => <SliderThumbnail key={index} index={index} image={image} selectedSlideItem={selectedSlideItem} handleClick={ () => setSelectedSlideItem(index) } />                                ) }
                     </div>
         
                     <a href={`#slider-item-${ selectedSlideItem < images.length - 1 ? selectedSlideItem + 1 : selectedSlideItem }`} className="slider__chevron" onClick={ () => handleCarrouselClick('next') }>

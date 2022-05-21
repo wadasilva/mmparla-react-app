@@ -8,6 +8,7 @@ import Site from "./components/site/Site";
 import FrmOrganization from "./components/admin/FrmOrganization";
 import FrmInvitation from "./components/admin/FrmInvitation";
 import FrmTestimonial from "./components/admin/FrmTestimonial";
+import Gallery from "./components/Gallery";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
@@ -23,6 +24,7 @@ root.render(
           <Route path="/organizations" element={<FrmOrganization />} />
           <Route path="/testimonials/invite" element={<FrmInvitation />} />
           <Route path="/testimonial/:code" element={<FrmTestimonial />} />
+          <Route path="/galleries" element={<Gallery />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -36,7 +36,6 @@ router.post("/", async (req, res) => {
     email: Joi.string().required().email(),
     rol: Joi.string().optional().min(3).max(50),
     message: Joi.string().min(10).max(500).required(),
-    accepted: Joi.boolean(),
     code: Joi.required(),
   });
 
@@ -64,8 +63,8 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   let query = Testimonial.find({});
 
-  if (req.query.accepted != null && req.query.accepted != undefined)
-    query = query.where("accepted").equals(req.query.accepted);
+  // if (isAdmin)
+  // query = query.where("accepted").equals(true);
 
   query = query.sort({ createAt: -1 });
 
@@ -86,13 +85,13 @@ router.get("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   if (!req.body.id) return res.status(400).send("id is required");
-  if (req.body.state == null || req.body.state == undefined)
-    return res.status(400).send("state is required");
+  if (req.body.accepted == null || req.body.accepted == undefined)
+    return res.status(400).send("accepted is required");
 
   const testimonial = await Testimonial.findOne({ _id: req.body.id });
   if (!testimonial) return res.status(404).send();
 
-  testimonial.accepted = req.body.state;
+  testimonial.accepted = req.body.accepted;
   await testimonial.save();
 
   return res.status(200).send(testimonial);

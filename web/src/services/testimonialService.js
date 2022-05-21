@@ -15,3 +15,7 @@ export function getTestimonials() {
 export function addTestimonial(data) {
   return http.post(`/testimonials/`, data);
 }
+
+export function setState(data) {
+  return http.put(`/testimonials/`, data);
+}
