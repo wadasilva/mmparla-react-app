@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { getPhotos } from '../../services/photoService';
 import config from '../../config/config.json';
 import SliderThumbnail from '../common/SliderThumbnail';
+import { Carousel } from 'react-responsive-carousel';
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const WorkBlock = () => {
     const [images, setImages] = useState([]);
@@ -16,9 +18,9 @@ const WorkBlock = () => {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        document.getElementById(`carrousel-item-${selectedSlideItem}`)?.scrollIntoView();
-    }, [selectedSlideItem]);
+    // useEffect(() => {
+    //     document.getElementById(`carrousel-item-${selectedSlideItem}`)?.scrollIntoView();
+    // }, [selectedSlideItem]);
 
 
     function getImages(data) {
@@ -30,15 +32,15 @@ const WorkBlock = () => {
                     id: image.id,
                     url: `${config.apiUrl}/${image.url}`,
                     description: image.description,
-                    extention: image.extention,
+                    format: image.format,
                     breakpoints: image.breakpoints.map(breakpoint => {
                         return {
-                            extention: breakpoint.extention,
+                            format: breakpoint.format,
                             breakpoint: breakpoint.images.map(image => `${config.apiUrl}/${image.url} ${image.width}w`).join(',')
                         }
                     }).sort((a, b) => {
-                        if (a.extention > b.extention) return -1;
-                        if (a.extention < b.extention) return 1;
+                        if (a.format > b.format) return -1;
+                        if (a.format < b.format) return 1;
     
                         return 0;
                     })
@@ -63,35 +65,29 @@ const WorkBlock = () => {
                 <h2 className="block__heading" data-aos="fade-up">Nuestros trabajos</h2>
             </header>
             <div className="carrousel container">
-                {/* carrousel slides */}
-                <div className="carrousel__slides">
-                    { images.map((image, index) => {
-                        return (
-                            <div key={index} id={`carrousel-item-${index}`} className="carrousel__slides-item">
-                                <picture className="carrousel__item">
-                                    { image.breakpoints.map((source) => <source key={`${index}-${source.extention}`} type={`image/${source.extention}`} srcSet={source.breakpoint} />) }
 
-                                    <img className="carrousel__item" key={image.id} src={image.url} alt={image.description} />
+                <Carousel showThumbs={true} renderThumbs={ (children) => children.map((item, index) => item.props.children)}>
+                    { images.map((image, imageIndex) => {
+                        return (
+                            <div key={imageIndex}>
+                                <picture>
+                                    { image.breakpoints.map((source, breakpointIndex) => <source key={`${imageIndex}-${breakpointIndex}-${source.format}`} type={`image/${source.format}`} srcSet={source.breakpoint} />) }
+                                    <img key={image.id} src={image.url} alt={image.description} />
                                 </picture>
                             </div>
-                        )
+                        )                        
                     })}
-                </div>
+                </Carousel>
             
-                {/* carrousel navgator */}
-                <div className="carrousel__navigator">
+                {/* <div className="carrousel__navigator">
                     <a href={`#slider-item-${ selectedSlideItem > 0 ? selectedSlideItem - 1 : selectedSlideItem}`} className="slider__chevron" onClick={ () => handleCarrouselClick('prev') }>
                         <img src="/images/left-arrow.png" alt="" />
                     </a>
-                    
-                    <div className="slider__thumbnails">
-                        { images.map((image, index) => <SliderThumbnail key={index} index={index} image={image} selectedSlideItem={selectedSlideItem} handleClick={ () => setSelectedSlideItem(index) } />                                ) }
-                    </div>
         
                     <a href={`#slider-item-${ selectedSlideItem < images.length - 1 ? selectedSlideItem + 1 : selectedSlideItem }`} className="slider__chevron" onClick={ () => handleCarrouselClick('next') }>
                         <img src="/images/right-arrow.png" alt="" />
                     </a>
-                </div>
+                </div> */}
             </div>
         </section>
     );
