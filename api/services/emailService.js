@@ -2,6 +2,7 @@ const config = require("config");
 const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 const fs = require("fs");
+const logger = require("../startup/logging");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -28,6 +29,19 @@ transporter.use(
     viewPath: "./views",
   })
 );
+
+const transporterNonHtml = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: fs.readFileSync(process.env.app_smtp_user),
+    pass: fs.readFileSync(process.env.app_smtp_password),
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
 
 module.exports.sendNewTestimonialNotification = async (email) => {
   const info = await transporter.sendMail({
@@ -57,4 +71,16 @@ module.exports.sendInvitationMessage = async (email, code) => {
   });
 
   console.log("Message sent: %s", info.messageId);
+};
+
+module.exports.sendCostomerMessage = async ({ email, subject, message }) => {
+  const info = await transporterNonHtml.sendMail({
+    from: email,
+    to: fs.readFileSync(process.env.app_smtp_user),
+    cc: email,
+    subject: subject,
+    text: message,
+  });
+
+  logger.debug("Message sent: %s", info.messageId);
 };

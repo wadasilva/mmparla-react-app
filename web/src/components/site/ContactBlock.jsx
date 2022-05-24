@@ -18,7 +18,7 @@ const ContactBlock = () => {
                     </div>
                     <Map />
                 </div>
-                <form action="/" className="contact__email aos-overflow-hidden" data-aos="fade-left">
+                <form className="contact__email aos-overflow-hidden" data-aos="fade-left">
                     <input type="text" className="input input--block" placeholder="Nombre" />
                     <input type="text" className="input input--block" placeholder="Email" />
                     <input type="text" className="input input--block" placeholder="Asunto" />
