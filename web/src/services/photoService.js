@@ -1,4 +1,4 @@
-import http from "axios";
+import http from "../services/httpService";
 
 export function getPhotos() {
   return http.get("/galleries");

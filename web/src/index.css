@@ -751,6 +751,11 @@ section:nth-of-type(even).block {
   font-size: 1.5rem;
 }
 
+.services__item .icon {
+  min-width: 60px;
+  min-height: 60px;
+}
+
 @media screen and (min-width: 769px) {
   .services-block .media__title {
     font-size: 2rem;
@@ -762,6 +767,11 @@ section:nth-of-type(even).block {
 
   .services__item {
     max-width: 320px;
+  }
+
+  .services__item .icon {
+    min-width: 70px;
+    min-height: 70px;
   }
 }
 
@@ -825,9 +835,14 @@ section:nth-of-type(even).block {
   font-size: 1.6rem;
 }
 
+.main-content .contact__email .form-group {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
 .contact__email input,
 .contact__email textarea {
-  margin-bottom: 30px;
+  margin-bottom: 0px;
 }
 
 .contact__email {
