@@ -82,7 +82,7 @@ class FrmGallery extends Form {
       y: 25,
       width: 50,
       height: 50,
-      aspect: 16 / 9,
+      aspect: 4 / 3,
     },
     file: null,
     image: {
@@ -295,7 +295,7 @@ class FrmGallery extends Form {
                 onComplete={(crop) => this.cropImage(crop)}
                 onChange={(crop) => this.setState({ crop })}
                 crossorigin="anonymous"
-                aspect={16 / 9}
+                aspect={4 / 3}
               >
                 <img
                   ref={this.imageRef}

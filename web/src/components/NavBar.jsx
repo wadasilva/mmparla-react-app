@@ -36,9 +36,9 @@ const NavBar = (props) => {
           <li className="nav__item">
             <HashLink className="link" smooth to={'/#contact-block'}>contacto</HashLink>
           </li>
-          <li className="nav__item">
+          {/* <li className="nav__item">
             <Link className="link" to={'/organizations'}>clientes</Link>
-          </li>
+          </li> */}
         </ul>
       </nav>
   );
