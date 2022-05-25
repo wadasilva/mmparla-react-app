@@ -11,7 +11,7 @@ const fileTypes = ["GIF", "JPEG", "JPG", "TIFF", "PNG", "WEBP", "BMP"];
 
 class FrmOrganization extends Form {
   initialState = {
-    data: { name: "", logo: {} },
+    data: { name: "", photo: {} },
     errors: {},
     file: null,
   };
@@ -20,7 +20,7 @@ class FrmOrganization extends Form {
 
   schema = {
     name: Joi.string().required().min(3).max(255).label("Name"),
-    logo: Joi.object({
+    photo: Joi.object({
       image: Joi.binary()
       .encoding("base64")
       .min(1)
@@ -41,8 +41,8 @@ class FrmOrganization extends Form {
   updateLogoProperty = async () => {
     const { data, file } = { ...this.state };
     try {
-      data.logo.image = await utils.toBase64(file);
-      data.logo.format = utils.getFileExtention(file.name);
+      data.photo.image = await utils.toBase64(file);
+      data.photo.format = utils.getFileExtention(file.name);
       this.setState({ data });
       this.validateFileUpload();
     } catch (error) {
@@ -59,11 +59,11 @@ class FrmOrganization extends Form {
       >
         {this.renderInput("name", "Name")}
         <InputUpload
-          name="logo"
+          name="photo"
           label="Logo"
           types={fileTypes}
           handleChange={this.handleUploadChange}
-          error={this.state.errors.logo}
+          error={this.state.errors.photo}
         />
         {this.renderButton("Guardar")}
       </form>
@@ -75,13 +75,13 @@ class FrmOrganization extends Form {
   };
 
   validateFileUpload = () => {
-    const obj = { ["logo"]: { ["image"]: this.state.data["logo"]["image"], ["format"]: this.state.data["logo"]["format"] } };
-    const schema = { ["logo"]: this.schema["logo"] };
+    const obj = { ["photo"]: { ["image"]: this.state.data["photo"]["image"], ["format"]: this.state.data["photo"]["format"] } };
+    const schema = { ["photo"]: this.schema["photo"] };
     const { error } = Joi.validate(obj, schema);
     const errors = { ...this.state.errors };
     
-    if (error) errors["logo"] = error.details[0].message;
-    else delete errors["logo"];
+    if (error) errors["photo"] = error.details[0].message;
+    else delete errors["photo"];
 
     this.setState({ errors });
   };  

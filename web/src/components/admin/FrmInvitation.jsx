@@ -21,7 +21,7 @@ class FrmInvitation extends Form {
 
   schema = {
     organization: Joi.string().required().label("Organization"),
-    email: Joi.string().required().email().label("Email"),
+    email: Joi.string().required().max(100).email().label("Email"),
   };
 
   async componentDidMount() {

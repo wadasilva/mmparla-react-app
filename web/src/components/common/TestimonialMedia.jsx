@@ -1,7 +1,7 @@
 import React from 'react';
 
 const TestimonialMedia = ({testimonial, isAdmin, onAccept, onReject}) => {
-    const {logo} = testimonial?.organization ?? {};
+    const {photo} = testimonial?.organization ?? {};
 
     return (
         <div className="media testimonial">
@@ -9,7 +9,7 @@ const TestimonialMedia = ({testimonial, isAdmin, onAccept, onReject}) => {
             <img src={`data:image/${testimonial.photo.format};base64,${testimonial.photo.image}`} alt="Witness" />
           </div>
           <div className="media__brand">
-            <img src={`data:image/${logo?.format};base64,${logo?.image}`} alt="Logo Canoil" />
+            <img src={`data:image/${photo?.format};base64,${photo?.image}`} alt="Logo Canoil" />
           </div>
           <div className="media__body">
             <p>{testimonial.message}</p>

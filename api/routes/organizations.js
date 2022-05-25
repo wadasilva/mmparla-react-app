@@ -7,7 +7,7 @@ const router = express.Router();
 const logger = require("../startup/logging");
 
 const schema = Joi.object({
-  logo: Joi.object({
+  photo: Joi.object({
     image: Joi.string()
       .base64()
       .required()
@@ -79,8 +79,8 @@ router.put("/:id", async (req, res) => {
     return res.status(400).send("Duplicated name for organization.");
 
   organization.name = req.body.name;
-  organization.logo.image = req.body.logo.image;
-  organization.logo.format = req.body.logo.format;
+  organization.photo.image = req.body.photo.image;
+  organization.photo.format = req.body.photo.format;
   await organization.save();
 
   return res.status(200).send(organization);

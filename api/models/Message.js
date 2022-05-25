@@ -12,6 +12,7 @@ const Message = mongoose.model(
     email: {
       type: String,
       required: false,
+      max: 100,
     },
     subject: {
       type: String,

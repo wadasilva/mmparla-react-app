@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
     }),
     firstName: Joi.string().min(3).max(100).required(),
     lastName: Joi.string().min(3).max(100).required(),
-    email: Joi.string().required().email(),
+    email: Joi.string().required().max(100).email(),
     rol: Joi.string().optional().min(3).max(50),
     message: Joi.string().min(10).max(500).required(),
     code: Joi.required(),

@@ -1,19 +1,12 @@
 const mongoose = require("mongoose");
+const photoSchema = require("./schemas/photo");
 
 const Testimonial = mongoose.model(
   "Testimonial",
   new mongoose.Schema({
     photo: {
-      image: {
-        required: false,
-        type: String,
-      },
-      format: {
-        required: true,
-        min: 3,
-        max: 10,
-        type: String,
-      },
+      type: photoSchema,
+      required: false,
     },
     firstName: {
       type: String,
@@ -30,6 +23,7 @@ const Testimonial = mongoose.model(
     email: {
       type: String,
       required: false,
+      max: 255,
     },
     rol: {
       type: String,

@@ -9,7 +9,7 @@ const emailService = require("../services/emailService");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(100).required(),
-  email: Joi.string().required().email(),
+  email: Joi.string().required().max(100).email(),
   subject: Joi.string().optional().max(50),
   message: Joi.string().min(10).max(500).required(),
 });

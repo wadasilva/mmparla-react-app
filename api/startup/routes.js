@@ -5,6 +5,7 @@ const galleries = require("../routes/galleries");
 const testimonials = require("../routes/testimonials");
 const organizations = require("../routes/organizations");
 const contact = require("../routes/contact");
+const users = require("../routes/user");
 const cors = require("cors");
 
 var corsOptions = {
@@ -24,5 +25,6 @@ module.exports = function (app) {
   app.use("/api/galleries", galleries);
   app.use("/api/testimonials", testimonials);
   app.use("/api/organizations", organizations);
+  app.use("/api/users", users);
   app.use("/api/contact", contact(app));
 };

@@ -34,7 +34,7 @@ class FrmTestimonial extends Form {
     lastName: Joi.string().required().min(3).max(100).label("Last name"),
     rol: Joi.string().required().min(3).max(50).label("Role"),
     message: Joi.string().required().min(10).max(500).label("Comment"),
-    email: Joi.any().optional().label("Email"),
+    email: Joi.string().optional().max(100).label("Email"),
     photo: Joi.object({
       image: Joi.binary()
         .encoding("base64")
