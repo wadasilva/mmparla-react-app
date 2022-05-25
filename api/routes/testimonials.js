@@ -51,6 +51,7 @@ router.post("/", async (req, res) => {
 
   const testimonial = new Testimonial(req.body);
   testimonial.invitation = invitation._id;
+  testimonial.organization = invitation.organization._id;
   await testimonial.save();
 
   invitation.status = "finished";
@@ -68,15 +69,16 @@ router.get("/", async (req, res) => {
 
   query = query.sort({ createAt: -1 });
 
-  query = query.populate({
-    path: "invitation",
-    select: "organization",
-    populate: {
+  query = query.populate([
+    {
+      path: "invitation",
+      model: "invitation",
+    },
+    {
       path: "organization",
       model: "organization",
-      select: "logo",
     },
-  });
+  ]);
 
   const result = await query.exec();
 

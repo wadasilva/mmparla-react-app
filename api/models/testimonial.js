@@ -52,6 +52,10 @@ const Testimonial = mongoose.model(
       required: true,
       default: Date.now(),
     },
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+    },
     invitation: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "invitation",

@@ -12,6 +12,10 @@ import "aos/dist/aos.css";
 const Site = () => {
   useEffect(() => {
     AOS.init();
+
+    //Pushes the Navbar some pixels down when it's the website
+    document.getElementsByClassName('nav')[0].classList.add('nav-down');
+
   }, []);
 
   return (

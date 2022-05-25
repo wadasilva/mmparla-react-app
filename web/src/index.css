@@ -822,7 +822,7 @@ section:nth-of-type(even).block {
 }
 
 @media screen and (min-width: 768px) {
-  .nav {
+  .nav-down {
     border-top: 1px solid var(--color-body);
     border-bottom: 1px solid var(--color-body);
     width: 100%;

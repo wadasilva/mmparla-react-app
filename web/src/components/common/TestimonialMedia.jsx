@@ -1,7 +1,7 @@
 import React from 'react';
 
 const TestimonialMedia = ({testimonial, isAdmin, onAccept, onReject}) => {
-    const {logo} = testimonial?.invitation.organization;
+    const {logo} = testimonial?.organization ?? {};
 
     return (
         <div className="media testimonial">

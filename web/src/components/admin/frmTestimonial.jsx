@@ -131,11 +131,11 @@ class FrmTestimonial extends Form {
             </small>
           )}
         </div>
-        {this.renderInput("firstName", "First name")}
-        {this.renderInput("lastName", "Last name")}
+        {this.renderInput("firstName", "Nombre")}
+        {this.renderInput("lastName", "Apellido")}
         {this.renderInput("email", "Email", { isReadonly: true })}
-        {this.renderInput("rol", "Rol")}
-        {this.renderTextArea("message", "Comment")}
+        {this.renderInput("rol", "Cargo")}
+        {this.renderTextArea("message", "Comentario")}
         {this.renderButton("Send")}
       </form>
     );
