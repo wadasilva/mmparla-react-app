@@ -51,7 +51,7 @@ module.exports.sendNewTestimonialNotification = async (email) => {
     template: "new-testimonial-notification",
     context: {
       email: fs.readFileSync(process.env.app_smtp_user),
-      endpoint: `${config.get("webAppUrl")}/testimonials`,
+      endpoint: `${config.get("webAppUrl")}/#testimonial-block`,
     },
   });
 

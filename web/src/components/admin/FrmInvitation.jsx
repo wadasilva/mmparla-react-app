@@ -5,7 +5,7 @@ import Select from "../common/select";
 import Joi from "joi-browser";
 import * as organizationService from "../../services/organizationService";
 import * as testimonialService from "../../services/testimonialService";
-import logger from "../../services/logService";
+import { toast } from "react-toastify";
 
 class FrmInvitation extends Form {
   initialState = {
@@ -96,11 +96,17 @@ class FrmInvitation extends Form {
 
   doSubmit = async () => {
     try {
-      await testimonialService.sendInvitation(this.state.data);
-      const { data } = this.initialState;
-      this.setState({data});
+      const { status } = await testimonialService.sendInvitation(this.state.data);
+
+      if (status === 200) {
+        const { data } = this.initialState;
+        this.setState({data});
+
+        toast.success('Invitación enviada con exito!', { autoClose: 8000 });
+      }
+      
     } catch (error) {
-      console.log(error);
+      toast.error('Disculpe, algo ha salido mal, intente nuevamente por favor.', { autoClose: 8000 });
     }
   };
 

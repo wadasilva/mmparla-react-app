@@ -1,4 +1,4 @@
-import http from "axios";
+import http from "./httpService";
 
 export function getInvitation(id) {
   return http.get(`/testimonials/invite/${id}`);

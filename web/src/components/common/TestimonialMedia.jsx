@@ -6,7 +6,7 @@ const TestimonialMedia = ({testimonial, isAdmin, onAccept, onReject}) => {
     return (
         <div className="media testimonial">
           <div className="media__image">
-            <img src={`data:image/${testimonial.photo.format};base64,${testimonial.photo.image}`} alt="Witness" />
+            <img src={ testimonial.photo ? `data:image/${testimonial.photo.format};base64,${testimonial.photo.image}` : '/images/no-photo.png' } alt="Witness" />
           </div>
           <div className="media__brand">
             <img src={`data:image/${photo?.format};base64,${photo?.image}`} alt="Logo Canoil" />

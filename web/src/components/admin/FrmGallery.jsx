@@ -10,6 +10,7 @@ import InputUpload from "../common/InputUpload";
 import Input from '../common/input';
 import "react-image-crop/dist/ReactCrop.css";
 import * as photoService from '../../services/photoService';
+import { toast } from "react-toastify";
 
 const fileTypes = ["GIF", "JPEG", "JPG", "TIFF", "PNG", "WEBP", "BMP"];
 const styles = {
@@ -148,11 +149,14 @@ class FrmGallery extends Form {
 
   doSubmit = async () => {
     try {
-      await photoService.uploadPhoto(this.state.data);
+      const { status, data } = await photoService.uploadPhoto(this.state.data);
 
-      this.setState(this.initialState);
+      if (status === 200) {
+        this.setState(this.initialState);
+        toast.success('Imagen cargada con exito!', { autoClose: 8000 });
+      }      
     } catch (error) {
-      console.log('error');
+      toast.error('Disculpe, algo ha salido mal, intente nuevamente por favor.', { autoClose: 8000 });
     }
   };
 

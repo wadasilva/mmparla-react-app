@@ -7,9 +7,11 @@ import { withRouter } from "../hoc/withRouter";
 import Joi from "joi-browser";
 import Modal from "react-modal";
 import Avatar from "react-avatar-edit";
+import { toast } from "react-toastify";
 import * as testimonialsService from "../../services/testimonialService";
 import config from "../../config/config.json";
 import utils from "../../utils/uploadUtils";
+import logger from "../../services/logService";
 
 class FrmTestimonial extends Form {
   state = {
@@ -19,8 +21,7 @@ class FrmTestimonial extends Form {
       lastName: "",
       rol: "",
       message: "",
-      email: "",
-      photo: { format: "png" }
+      email: ""
     },
     errors: {},
     isModalOpen: false,
@@ -75,11 +76,17 @@ class FrmTestimonial extends Form {
   }
 
   async doSubmit() {
-    try {
-      await testimonialsService.addTestimonial(this.state.data);
-      return this.props.router.navigate('/#testimonial-block', { replace: true });
+    try {      
+      const { status, data } = await testimonialsService.addTestimonial(this.state.data);
+      
+      if (status === 200) {
+        toast.success('Listo! Muchas gracias por tu colaboración!', { autoClose: 8000 });
+        return this.props.router.navigate('/#testimonial-block', { replace: true });
+      }      
     } catch (error) {
-      console.log(error);
+      logger.log(`post data: ${JSON.stringify(this.state.data)}`);
+      logger.log(JSON.stringify(error.response ?? error));
+      toast.error('Disculpe, algo ha salido mal, intente nuevamente por favor.', { autoClose: 8000 });
     }
   }
 
@@ -157,8 +164,6 @@ class FrmTestimonial extends Form {
     const base64file = await utils.toBase64(file);
     const format = utils.getFileExtention(file.name);
     const errorMessage = this.validatePhotoProperty(base64file, format);
-    console.log("onBeforeFileLoad");
-    console.log(errorMessage);
 
     if (errorMessage) {
       errors["photo"] = errorMessage;
@@ -189,6 +194,9 @@ class FrmTestimonial extends Form {
     if (!Object.keys(errors).length <= 0) return;
 
     preview = photo;
+
+    if (!data.photo) data.photo = { image: '', format: '' };
+
     data.photo.image = utils.stripImageMimeType(photo);
 
     delete errors["photo"];
