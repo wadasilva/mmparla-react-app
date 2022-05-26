@@ -143,7 +143,7 @@ class FrmTestimonial extends Form {
         {this.renderInput("email", "Email", { isReadonly: true })}
         {this.renderInput("rol", "Cargo")}
         {this.renderTextArea("message", "Comentario")}
-        {this.renderButton("Send")}
+        {this.renderButton("Enviar")}
       </form>
     );
   }

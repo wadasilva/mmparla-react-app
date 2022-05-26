@@ -272,9 +272,9 @@ class FrmGallery extends Form {
             handleChange={this.handleUploadChange}
             error={this.state.errors.image}
           />
-          {this.renderInput('description', 'Description')}
+          {this.renderInput('description', 'Descripción')}
           <button type="submit" className="btn btn--info btn--small">
-            Upload
+            Enviar
             <svg className="icon icon--small">
               <use xlinkHref="images/sprite.svg#upload-solid"></use>
             </svg>
@@ -287,7 +287,7 @@ class FrmGallery extends Form {
             onRequestClose={() => this.setState({ isModalOpen: false })}
             style={styles.modal}
             shouldCloseOnOverlayClick={false}
-            contentLabel="Set a profile picture"
+            contentLabel="Selecione una imagen de perfil"
           >
             <div style={styles.cropContainer}>
               <ReactCrop

@@ -57,7 +57,7 @@ class FrmOrganization extends Form {
         style={{ padding: "10%", display: "flex", flexDirection: "column" }}
         onSubmit={this.handleSubmit}
       >
-        {this.renderInput("name", "Name")}
+        {this.renderInput("name", "Nombre")}
         <InputUpload
           name="photo"
           label="Logo"

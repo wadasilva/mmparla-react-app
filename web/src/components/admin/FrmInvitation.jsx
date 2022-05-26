@@ -35,9 +35,9 @@ class FrmInvitation extends Form {
         style={{ padding: "10%", display: "flex", flexDirection: "column" }}
         onSubmit={this.handleSubmit}
       >
-        {this.renderSelect('organization', 'Organization', this.state.organizations)}        
+        {this.renderSelect('organization', 'Organización', this.state.organizations)}        
         {this.renderInput('email', 'Email')}
-        {this.renderButton('Send')}
+        {this.renderButton('Enviar')}
       </form>
     );
   }
@@ -86,7 +86,7 @@ class FrmInvitation extends Form {
   async populateOrganizations() {
     const { data } = await organizationService.getOrganizations();
 
-    const organizations = [{ id: "", value: "SELECT AN OPTION" }];
+    const organizations = [{ id: "", value: "ELIJA UNA OPCIÓN" }];
     data.map((organization) =>
       organizations.push({ id: organization._id, value: organization.name })
     );
