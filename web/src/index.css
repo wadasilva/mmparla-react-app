@@ -227,6 +227,10 @@ a {
   gap: 5px;
 }
 
+.btn--stretched {
+  width: 100%;
+}
+
 .btn--small > .icon--small {
   width: 15px;
   height: 15px;

@@ -122,6 +122,7 @@ class FrmTestimonial extends Form {
               onBeforeFileLoad={this.onBeforeFileLoad}
               src={this.state.src}
             />
+            <button type="button" class="btn btn--primary btn--stretched" onClick={ () => this.setState({ isModalOpen: false }) }>Cortar</button>
           </Modal>
           <img
             src={this.state.preview || this.state.src}
