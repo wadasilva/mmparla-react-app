@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getTestimonials, setState as setTestimonialState } from "../../services/testimonialService";
 import TestimonialMedia from "../common/TestimonialMedia";
+import auth from '../../services/authService';
 
 const TestimonialsBlock = () => {
   const [testimonials, setTestimonials] = useState([]);
+
+  const isAuthenticated = auth.getCurrentUser();
 
   useEffect(() => {
     async function fetchData() {
@@ -40,7 +43,7 @@ const TestimonialsBlock = () => {
         </h2>
       </header>
       <div className="grid grid--1x3 container">
-        {testimonials.map((item) => <TestimonialMedia key={item._id} testimonial={item} isAdmin={true} onAccept={ () => onAccept(item._id) } onReject={ () => onReject(item._id) } />)}  
+        {testimonials.map((item) => <TestimonialMedia key={item._id} testimonial={item} isAuthenticated={isAuthenticated} onAccept={ () => onAccept(item._id) } onReject={ () => onReject(item._id) } />)}  
       </div>
     </section>
   );

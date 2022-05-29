@@ -6,7 +6,6 @@ const { logger } = require("../startup/logging");
 const Joi = require("joi");
 const Message = require("../models/Message");
 const emailService = require("../services/emailService");
-const auth = require("../middleware/auth");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(100).required(),
@@ -20,7 +19,7 @@ module.exports = function (app) {
   app.engine(".hbs", exphbs({ extname: ".hbs", layoutsDir: "./views" }));
   app.set("view engine", ".hbs");
 
-  router.post("/", auth, async (req, res) => {
+  router.post("/", async (req, res) => {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error?.details) {

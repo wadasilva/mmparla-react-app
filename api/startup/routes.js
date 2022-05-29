@@ -8,6 +8,7 @@ const contact = require("../routes/contact");
 const users = require("../routes/user");
 const auth = require("../routes/auth");
 const cors = require("cors");
+const verifyUser = require("../middleware/verifyUser");
 
 var corsOptions = {
   origin: "*",
@@ -23,6 +24,7 @@ module.exports = function (app) {
   app.use(morgan("tiny"));
   app.options("*", cors(corsOptions));
   app.use(cors(corsOptions));
+  app.use(verifyUser);
   app.use("/api/galleries", galleries);
   app.use("/api/testimonials", testimonials);
   app.use("/api/organizations", organizations);

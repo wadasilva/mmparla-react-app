@@ -65,8 +65,9 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   let query = Testimonial.find({});
 
-  // if (isAdmin)
-  // query = query.where("accepted").equals(true);
+  if (!req.user) {
+    query = query.where({ accepted: true });
+  }
 
   query = query.sort({ createAt: -1 });
 

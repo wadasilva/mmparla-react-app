@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TestimonialMedia = ({testimonial, isAdmin, onAccept, onReject}) => {
+const TestimonialMedia = ({testimonial, isAuthenticated, onAccept, onReject}) => {
     const {photo} = testimonial?.organization ?? {};
 
     return (
@@ -18,7 +18,7 @@ const TestimonialMedia = ({testimonial, isAdmin, onAccept, onReject}) => {
             <h3 className="media__footer-heading">{testimonial.firstName} {testimonial.lastName}</h3>
             <p>{testimonial.rol}</p>
           </div>
-          {isAdmin && <div className="action-buttons">
+          {isAuthenticated && <div className="action-buttons">
             {(testimonial.accepted === null || testimonial.accepted === undefined) && <button type="button" className="btn btn--success btn--small" onClick={ onAccept }>
               <svg className="icon icon--white icon--small">
                 <use href="/images/sprite.svg#check"></use>

@@ -86,7 +86,7 @@ router.post("/", auth, async (req, res) => {
   return res.status(200).send(gallery);
 });
 
-router.get("/", auth, async (req, res) => {
+router.get("/", async (req, res) => {
   const result = await Gallery.find();
 
   const galleries = await result.map((gallery) => {

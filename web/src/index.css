@@ -91,6 +91,8 @@ a {
 }
 
 .link {
+  display: inline-flex;
+  align-items: center;
   color: var(--color-headings);
   font-family: "Myriad-Regular";
   font-size: 2rem;
@@ -98,8 +100,17 @@ a {
   transition: color 0.15s;
 }
 
+.link .icon {
+  margin: 0 5px;
+  fill: var(--color-headings);
+}
+
 .link:hover {
   color: #686163;
+}
+
+.link:hover .icon {
+  fill: #686163;
 }
 
 .link--uppercase {
@@ -150,6 +161,11 @@ a {
 .icon--small {
   width: 30px;
   height: 30px;
+}
+
+.icon--x-small {
+  width: 20px;
+  height: 20px;
 }
 
 /* Buttons */

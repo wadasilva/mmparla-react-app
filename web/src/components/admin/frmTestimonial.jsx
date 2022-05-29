@@ -84,7 +84,6 @@ class FrmTestimonial extends Form {
         return this.props.router.navigate('/#testimonial-block', { replace: true });
       }      
     } catch (error) {
-      logger.log(`post data: ${JSON.stringify(this.state.data)}`);
       logger.log(JSON.stringify(error.response ?? error));
       toast.error('Disculpe, algo ha salido mal, intente nuevamente por favor.', { autoClose: 8000 });
     }
