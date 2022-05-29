@@ -1,42 +1,21 @@
+const _ = require("lodash");
 const express = require("express");
-const isBase64 = require("is-base64");
-const config = require("config");
-const Joi = require("joi");
-const User = require("../models/User");
 const router = express.Router();
-const logger = require("../startup/logging");
+const isBase64 = require("is-base64");
+const User = require("../models/User");
+const { logger, sentryLogger } = require("../startup/logging");
+const bcrypt = require("bcrypt");
+const auth = require("../middleware/auth");
 
-const saltRounds = 10;
+router.post("/register", auth, async (req, res) => {
+  let validationResult = new User().validateUser(req.body);
+  if (validationResult.error?.details)
+    return res
+      .status(400)
+      .send(validationResult.error?.details.map((detail) => detail.message));
 
-router.post("/register", async (req, res) => {
-  const schema = Joi.object({
-    email: Joi.string().required().max(100).email(),
-    firstName: Joi.string().min(3).max(255).required(),
-    lastName: Joi.string().min(3).max(255).required(),
-    password: Joi.string().min(3).max(255).required(),
-    photo: Joi.object({
-      image: Joi.string()
-        .base64()
-        .required()
-        .custom((value, helpers) => {
-          if (
-            new Buffer.from(value, "base64").length >
-            config.get("upload.maxSize")
-          )
-            //1048576 bytes = 1MB
-            return helpers.message(
-              `Picture should not be greater than ${config.get(
-                "upload.maxSize"
-              )} ${config.get("upload.unit")}`
-            );
-        }, "custom validation"),
-      format: Joi.string()
-        .pattern(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions")
-        .required(),
-    }),
-  });
+  validationResult = new User().validatePassword(req.body.password);
 
-  const validationResult = schema.validate(req.body);
   if (validationResult.error?.details)
     return res
       .status(400)
@@ -49,17 +28,33 @@ router.post("/register", async (req, res) => {
   if (existingUser) return res.status(400).send("User already exists.");
 
   const user = new User(req.body);
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
   await user.save();
 
-  return res.status(200).send();
+  return res
+    .status(200)
+    .send(
+      _.pick(user, [
+        "_id",
+        "firstName",
+        "lastName",
+        "email",
+        "photo",
+        "createAt",
+      ])
+    );
 });
 
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   let query = User.find({}).sort("name");
+  const result = await query.exec();
 
-  //   if (req.query.accepted != null && req.query.accepted != undefined)
-  //     query = query.where("accepted").equals(req.query.accepted);
+  return res.status(200).send(result);
+});
 
+router.get("/me", auth, async (req, res) => {
+  let query = User.findOne({ _id: req.user._id });
   const result = await query.exec();
 
   return res.status(200).send(result);

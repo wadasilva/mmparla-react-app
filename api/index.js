@@ -1,10 +1,18 @@
-const starttupDebugger = require("debug")("app:startup");
+const config = require("config");
 require("./startup/folders")();
+const starttupDebugger = require("debug")("app:startup");
 const express = require("express");
 const app = express();
 const fs = require("fs");
 const https = require("https");
 const morgan = require("morgan");
+const { logger, sentryLogger } = require("./startup/logging");
+
+if (!config.get("jwtPrivateKey")) {
+  sentryLogger.log("FATAL ERROR: jwtPrivateKey is not defined.");
+  logger.error("FATAL ERROR: jwtPrivateKey is not defined.");
+  process.exit(1);
+}
 
 // hook morganBody to express app
 app.use(morgan("combined"));
@@ -12,6 +20,9 @@ morgan(app, { logAllReqHeader: true, maxBodyLength: 5000 });
 
 require("./startup/routes")(app);
 require("./startup/db")();
+
+//Initialize Sentry logging
+sentryLogger.init();
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, "0.0.0.0", true, () =>

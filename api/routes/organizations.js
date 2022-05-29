@@ -4,7 +4,8 @@ const config = require("config");
 const Joi = require("joi");
 const Organization = require("../models/organization");
 const router = express.Router();
-const logger = require("../startup/logging");
+const { logger } = require("../startup/logging");
+const auth = require("../middleware/auth");
 
 const schema = Joi.object({
   photo: Joi.object({
@@ -29,7 +30,7 @@ const schema = Joi.object({
   name: Joi.string().min(3).max(255).required(),
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   const validationResult = schema.validate(req.body);
   if (validationResult.error?.details)
     return res
@@ -49,7 +50,7 @@ router.post("/", async (req, res) => {
   return res.status(200).send(organization);
 });
 
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   let query = Organization.find({}).sort("name");
 
   //   if (req.query.accepted != null && req.query.accepted != undefined)
@@ -60,7 +61,7 @@ router.get("/", async (req, res) => {
   return res.status(200).send(result);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   if (!req.params.id) return res.status(400).send("id is required");
 
   const organization = await Organization.findOne({ _id: req.params.id });

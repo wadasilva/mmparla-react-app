@@ -5,3 +5,4 @@ logs/
 .cache/
 smtp_user.txt
 smtp_password.txt
+jwtPrivateKey.txt

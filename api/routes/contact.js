@@ -2,10 +2,11 @@ const express = require("express");
 const router = express.Router();
 const exphbs = require("express-handlebars");
 const hbs = require("nodemailer-express-handlebars");
-const logger = require("../startup/logging");
+const { logger } = require("../startup/logging");
 const Joi = require("joi");
 const Message = require("../models/Message");
 const emailService = require("../services/emailService");
+const auth = require("../middleware/auth");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(100).required(),
@@ -19,7 +20,7 @@ module.exports = function (app) {
   app.engine(".hbs", exphbs({ extname: ".hbs", layoutsDir: "./views" }));
   app.set("view engine", ".hbs");
 
-  router.post("/", async (req, res) => {
+  router.post("/", auth, async (req, res) => {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error?.details) {

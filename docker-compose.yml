@@ -29,9 +29,11 @@ services:
     environment:
       app_smtp_user: /run/secrets/smtp_user
       app_smtp_password: /run/secrets/smtp_password
+      mmparla_jwtPrivateKey: /run/secrets/jwtPrivateKey
     secrets:
       - smtp_user
       - smtp_password
+      - jwtPrivateKey
 
   db:
     image: mmparla_db
@@ -53,3 +55,5 @@ secrets:
     file: ./smtp_user.txt
   smtp_password:
     file: ./smtp_password.txt
+  jwtPrivateKey:
+    file: ./jwtPrivateKey.txt

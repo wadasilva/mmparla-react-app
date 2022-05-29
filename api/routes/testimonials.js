@@ -7,7 +7,8 @@ const Invitation = require("../models/invitation");
 const Organization = require("../models/organization");
 const emailService = require("../services/emailService");
 const router = express.Router();
-const logger = require("../startup/logging");
+const { logger } = require("../startup/logging");
+const auth = require("../middleware/auth");
 
 router.post("/", async (req, res) => {
   const schema = Joi.object({
@@ -85,7 +86,7 @@ router.get("/", async (req, res) => {
   return res.status(200).send(result);
 });
 
-router.put("/", async (req, res) => {
+router.put("/", auth, async (req, res) => {
   if (!req.body.id) return res.status(400).send("id is required");
   if (req.body.accepted == null || req.body.accepted == undefined)
     return res.status(400).send("accepted is required");
@@ -100,7 +101,6 @@ router.put("/", async (req, res) => {
 });
 
 router.get("/invite/:code", async (req, res) => {
-  console.log(`I'm here: ${req.params.code}`);
   let invitation = null;
   try {
     invitation = await Invitation.findOne({ _id: req.params.code });
@@ -113,7 +113,7 @@ router.get("/invite/:code", async (req, res) => {
   return res.status(200).send(invitation);
 });
 
-router.post("/invite", async (req, res) => {
+router.post("/invite", auth, async (req, res) => {
   const schema = Joi.object({
     organization: Joi.string().required(),
     email: Joi.string().required().email(),

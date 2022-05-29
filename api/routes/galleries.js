@@ -5,12 +5,13 @@ const path = require("path");
 const isBase64 = require("is-base64");
 const express = require("express");
 const Joi = require("joi");
-const logger = require("../startup/logging");
+const { logger } = require("../startup/logging");
 const router = express.Router();
 const imageService = require("../services/imageService");
 const config = require("config");
+const auth = require("../middleware/auth");
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   // console.log('req.body');
   // console.log(req.body);
 
@@ -85,7 +86,7 @@ router.post("/", async (req, res) => {
   return res.status(200).send(gallery);
 });
 
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   const result = await Gallery.find();
 
   const galleries = await result.map((gallery) => {
@@ -178,7 +179,7 @@ router.get("/breakpoint/:breakpointId/image/:imageId", async (req, res) => {
   res.end(image);
 });
 
-router.delete("/", async (req, res) => {
+router.delete("/", auth, async (req, res) => {
   console.log("picture to delete: " + req.body.id);
 
   if (!req.body.id) return res.status(400).send("id is required");
@@ -191,7 +192,7 @@ router.delete("/", async (req, res) => {
   return res.status(200).send(gallery);
 });
 
-router.post("/invite", async (req, res) => {
+router.post("/invite", auth, async (req, res) => {
   const schema = Joi.object({
     emails: Joi.array().required().items(Joi.string().email()),
     name: Joi.string().min(6).max(255).required(),

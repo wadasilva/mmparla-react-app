@@ -6,6 +6,7 @@ const testimonials = require("../routes/testimonials");
 const organizations = require("../routes/organizations");
 const contact = require("../routes/contact");
 const users = require("../routes/user");
+const auth = require("../routes/auth");
 const cors = require("cors");
 
 var corsOptions = {
@@ -26,5 +27,6 @@ module.exports = function (app) {
   app.use("/api/testimonials", testimonials);
   app.use("/api/organizations", organizations);
   app.use("/api/users", users);
+  app.use("/api/auth", auth);
   app.use("/api/contact", contact(app));
 };
