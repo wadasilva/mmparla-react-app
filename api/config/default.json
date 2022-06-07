@@ -1,6 +1,6 @@
 {
-    "name": "My Express App",
-    "db": "mongodb://db/mmparla",
+    "name": "Montaje de Muebles Parla - Default",
+    "db": "mongodb://mmparla_db:27017/",
     "webAppUrl": "http://wdasilva.ddns.net",
     "paths": {
         "temp": "./temp/",
@@ -11,8 +11,15 @@
         "unit": "byte"
     },
     "emailService": {
-        "smtpHost": "smtp.gmail.com",
-        "smtpPort": 465
+        "smtpHost": "smtp.sendgrid.net",
+        "smtpPort": 25,
+        "smtpUser": "user@gmail.com",
+        "smtpPassword": "password",
+        "smtpEmail": "",
+        "smtpSecure": false
+    },    
+    "sendgridService": { 
+        "apiKey": "" 
     },
-    "jwtPrivateKey": ""
+    "jwtPrivateKey": "myPrivateKey"
 }

@@ -1,8 +1,17 @@
 {
-    "name": "My Express App - Production",
-    "mail": {
-        "host": "smtp.gmail.com",
-        "port": "587",
-        "username": "montajesparla@gmail.com"
-    }
+    "name": "Montaje de Muebles Parla - Production",
+    "db": "",
+    "webAppUrl": "http://montajedemueblesparla.es",
+    "emailService": {
+        "smtpHost": "smtp.sendgrid.net",
+        "smtpPort": 25,
+        "smtpUser": "",
+        "smtpPassword": "",
+        "smtpEmail": "",
+        "smtpSecure": false
+    },
+    "sendgridService": { 
+        "apiKey": "" 
+    },
+    "jwtPrivateKey": ""
 }

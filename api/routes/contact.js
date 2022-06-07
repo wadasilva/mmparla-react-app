@@ -5,7 +5,7 @@ const hbs = require("nodemailer-express-handlebars");
 const { logger } = require("../startup/logging");
 const Joi = require("joi");
 const Message = require("../models/Message");
-const emailService = require("../services/emailService");
+const emailService = require("../services/nodemailerEmailService");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(100).required(),
@@ -31,7 +31,27 @@ module.exports = function (app) {
     const message = new Message(req.body);
     try {
       result = await message.save();
-      emailService.sendCostomerMessage(req.body);
+
+      // module.exports.sendCustomerMessage = async ({ email, subject, message }) => {
+      //   const info = await transporter.sendMail({
+      //     from: email,
+      //     to: config.get("emailService.smtpUser"),
+      //     cc: email,
+      //     subject: subject,
+      //     text: message,
+      //   });
+
+      //   logger.debug("Message sent: %s", info.messageId);
+      // };
+
+      const result = await emailService.send(
+        config.get("emailService.smtpEmail"),
+        req.body.email,
+        req.body.subject,
+        req.body.message
+      );
+
+      logger.debug("Message sent: %s", info.messageId);
     } catch (error) {
       logger.error(error);
 

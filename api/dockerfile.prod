@@ -1,0 +1,22 @@
+# Stepa 1: Build stage
+FROM node:16.15.0-alpine3.15
+RUN apk update && apk add sudo
+RUN addgroup app && adduser -S -G app app
+
+RUN sudo npm i --only=prod -g sharp
+RUN npm i --only=prod nodemon -g --save-dev
+
+RUN mkdir /app && chown app:app /app
+USER app
+WORKDIR /app
+COPY --chown=app:app package*.json ./
+RUN npm i --only=prod
+
+COPY --chown=app:app . ./
+ENV NODE_ENV=production
+# ENV smtp_user=/run/secrets/smtp_user
+# ENV smtp_password=/run/secrets/smtp_password
+ENV jwt_private_key=/run/secrets/jwt_private_key
+# ENV mmparla_db=/run/secrets/mmparla_db
+EXPOSE 3000
+CMD ["nodemon", "-L", "--watch", ".", "index.js", "--host", "0.0.0.0", "--disableHostCheck"]

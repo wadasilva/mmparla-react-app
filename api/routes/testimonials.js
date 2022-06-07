@@ -1,13 +1,13 @@
 const express = require("express");
 const isBase64 = require("is-base64");
-const config = require("config");
+const config = require("config-secrets");
 const Joi = require("joi");
 const Testimonial = require("../models/testimonial");
 const Invitation = require("../models/invitation");
 const Organization = require("../models/organization");
-const emailService = require("../services/emailService");
+const emailService = require("../services/nodemailerEmailService");
 const router = express.Router();
-const { logger } = require("../startup/logging");
+const { logger, sentryLogger } = require("../startup/logging");
 const auth = require("../middleware/auth");
 
 router.post("/", async (req, res) => {
@@ -57,7 +57,30 @@ router.post("/", async (req, res) => {
 
   invitation.status = "finished";
   await invitation.save();
-  emailService.sendNewTestimonialNotification(req.body.email);
+
+  // module.exports.sendNewTestimonialNotification = async (email) => {
+  //   const info = await transporterWithTemplate.sendMail({
+  //     from: config.get("emailService.smtpEmail"),
+  //     to: config.get("emailService.smtpEmail"),
+  //     subject: "Nuevo testimonial de un cliente!!!",
+  //     template: "new-testimonial-notification",
+  //     context: {
+  //       email: config.get("emailService.smtpUser"),
+  //       endpoint: `${config.get("webAppUrl")}/#testimonial-block`,
+  //     },
+  //   });
+
+  //   console.log("Message sent: %s", info.messageId);
+  // };
+
+  const result = await emailService.send(
+    req.body.email,
+    config.get("emailService.smtpEmail"),
+    "Nuevo testimonial de un cliente!!!",
+    "This is a test body"
+  );
+
+  console.log("Message sent: %s", result.messageId);
 
   return res.status(200).send(testimonial);
 });
@@ -135,10 +158,40 @@ router.post("/invite", auth, async (req, res) => {
     logger.debug(`creating invitation for ${req.body.email}`);
 
     let invitation = await createInvitationMessage(req.body);
-    if (invitation.status != "finished")
-      await emailService.sendInvitationMessage(req.body.email, invitation._id);
+    if (invitation.status != "finished") {
+      // module.exports.sendInvitationMessage = async (email, code) => {
+      //   const info = await transporterWithTemplate.sendMail({
+      //     from: config.get("emailService.smtpUser"),
+      //     to: email,
+      //     subject: "Invitación para valorar el servicio prestado por MMParla",
+      //     template: "testimonial-invitation",
+      //     context: {
+      //       email: email,
+      //       endpoint: `${config.get("webAppUrl")}/testimonial/${code}`,
+      //     },
+      //   });
+
+      //   console.log("Message sent: %s", info.messageId);
+      // };
+
+      const options = {
+        fromFriendlyName: "Montaje de Muebles Parla",
+        replyTo: config.get("emailService.smtpEmail"),
+      };
+
+      const result = await emailService.send(
+        req.body.email,
+        config.get("emailService.smtpEmail"),
+        "Invitación para valorar el servicio prestado por MMParla",
+        "This is a test body!",
+        false,
+        options
+      );
+
+      console.log("Message sent: %s", result.messageId);
+    }
   } catch (error) {
-    console.log(error);
+    sentryLogger.log(error);
   }
 
   return res.status(200).send();
@@ -147,7 +200,6 @@ router.post("/invite", auth, async (req, res) => {
 async function createInvitationMessage(body) {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(`body: ${JSON.stringify(body)}`);
       let invitation =
         (await Invitation.findOne({
           email: body.email,

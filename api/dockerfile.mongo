@@ -1,1 +1,3 @@
-FROM mongo:4.0-xenial
+FROM mongo:5.0.8-focal
+# ENV MONGO_INITDB_ROOT_USERNAME_FILE=/run/secrets/mmparla_db_user        - Commented so we can use values from config instead of ENV for the development environment
+# ENV MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mmparla_db_password

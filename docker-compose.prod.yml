@@ -1,0 +1,82 @@
+version: "3.9"
+services:
+
+  web:
+    image: mmparla_web:1.0.0-production
+    container_name: mmparla_web
+    build: 
+      context: ./web
+      dockerfile: dockerfile.prod
+    extra_hosts:
+      - "montajedemueblesparla.es:127.0.0.1"
+    ports:
+      - 80:80
+    restart: unless-stopped
+
+  api:
+    image: mmparla_api:1.0.0-production
+    container_name: mmparla_api
+    build: 
+      context: ./api
+      dockerfile: dockerfile.prod
+    extra_hosts:
+      - "montajedemueblesparla.es:127.0.0.1"
+    ports:
+      - 3000:3000
+    environment:
+      NODE_ENV: production
+      # smtp_user: /run/secrets/smtp_user
+      # smtp_password: /run/secrets/smtp_password
+      jwt_private_key: run/secrets/jwt_private_key
+      db_user: /run/secrets/db_user
+      db_password: /run/secrets/db_password
+      # mmparla_db: /run/secrets/mmparla_db
+    secrets:
+      - smtp_user
+      - smtp_password
+      - smtp_email
+      - db_user
+      - db_password
+      - jwt_private_key
+      - mmparla_db
+      - sendgrid_api_key
+    restart: unless-stopped
+
+  db:
+    image: mmparla_db:1.0.0-production
+    container_name: mmparla_db
+    build:
+      context: ./api
+      dockerfile: dockerfile.mongo.prod
+    ports:
+      - 27017:27017
+    volumes:
+      - mmparla:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/db_user
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+     - db_user
+     - db_password
+    restart: unless-stopped
+
+volumes:
+  mmparla:
+
+secrets:
+  smtp_user:
+    external: true
+  smtp_password:
+    external: true
+  smtp_email:
+    external: true
+  mmparla_db:
+    external: true
+  db_user:
+    external: true
+  db_password:
+    external: true
+  jwt_private_key:
+    external: true
+  sendgrid_api_key:
+    external: true

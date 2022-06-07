@@ -4,16 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll --verbose"
+    "test": "jest --watchAll --verbose",
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "16.15.0"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
     "@sentry/node": "^6.19.7",
     "@sentry/tracing": "^6.19.7",
     "bcrypt": "^5.0.1",
     "cloudinary": "^1.25.1",
+    "compression": "^1.7.4",
     "config": "^3.3.6",
+    "config-secrets": "^1.0.6",
     "cors": "^2.8.5",
     "debug": "^2.6.9",
     "express": "^4.17.1",
@@ -28,8 +35,8 @@
     "moment": "^2.29.1",
     "mongoose": "^5.12.9",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.6.2",
-    "nodemailer-express-handlebars": "^4.0.0",
+    "nodemailer": "^6.7.5",
+    "nodemailer-express-handlebars": "^5.0.0",
     "sharp": "^0.29.2",
     "uniqid": "^5.3.0",
     "webp-converter": "^2.3.3",

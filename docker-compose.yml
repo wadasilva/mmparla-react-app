@@ -2,19 +2,18 @@ version: "3.9"
 services:
 
   web:
-    image: mmparla_web
+    image: mmparla_web:1.0.0-development
     container_name: mmparla_web
     build: ./web
     extra_hosts:
       - "wdasilva.ddns.net:127.0.0.1"
     ports:
       - 80:80
-    #entrypoint: ["node", "index.js", "--host", "0.0.0.0", "--disableHostCheck"]
     volumes:
       - ./web:/app
 
   api:
-    image: mmparla_api
+    image: mmparla_api:1.0.0-development
     container_name: mmparla_api
     build: ./api
     extra_hosts:
@@ -27,16 +26,25 @@ services:
       - node_modules:/app/node_modules
       # - app-data:/app/temp
     environment:
-      app_smtp_user: /run/secrets/smtp_user
-      app_smtp_password: /run/secrets/smtp_password
-      mmparla_jwtPrivateKey: /run/secrets/jwtPrivateKey
+      NODE_ENV: development
+      # smtp_user: /run/secrets/smtp_user
+      # smtp_password: /run/secrets/smtp_password
+      # jwt_private_key: /run/secrets/jwt_private_key - Commented so we can use values from config instead of ENV for the development environment
+      # db_user: /run/secrets/db_user
+      # db_password: /run/secrets/db_password
+      # mmparla_db: 
     secrets:
       - smtp_user
       - smtp_password
-      - jwtPrivateKey
+      - smtp_email
+      # - db_user
+      # - db_password
+      # - jwt_private_key
+      # - mmparla_db
+      - sendgrid_api_key
 
   db:
-    image: mmparla_db
+    image: mmparla_db:1.0.0-development
     container_name: mmparla_db
     build:
       context: .
@@ -45,6 +53,12 @@ services:
       - 27017:27017
     volumes:
       - mmparla:/data/db
+    # environment:
+      # MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/db_user
+      # MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/db_password
+    # secrets:
+    #  - db_user
+    #  - db_password
 
 volumes:
   mmparla:
@@ -52,8 +66,18 @@ volumes:
 
 secrets:
   smtp_user:
-    file: ./smtp_user.txt
+    file: ./secrets/smtp_user
   smtp_password:
-    file: ./smtp_password.txt
-  jwtPrivateKey:
-    file: ./jwtPrivateKey.txt
+    file: ./secrets/smtp_password
+  smtp_email:
+    file: ./secrets/smtp_email
+  mmparla_db:
+    file: ./secrets/mmparla_db
+  db_user:
+    file: ./secrets/db_user
+  db_password:
+    file: ./secrets/db_password
+  jwt_private_key:
+    file: ./secrets/jwt_private_key
+  sendgrid_api_key:
+    file: ./secrets/sendgrid_api_key
