@@ -14,6 +14,7 @@ class ContactBlock extends Form {
             email: '',
             subject: '',
             message: '',
+            sendCopy: true
         },
         errors: {}
     };
@@ -25,6 +26,7 @@ class ContactBlock extends Form {
         email: Joi.string().required().email().label('Email'),
         subject: Joi.string().optional().max(50).label('Subject'),
         message: Joi.string().optional().min(10).max(500).label('Message'),
+        sendCopy: Joi.bool().optional().label('Send copy'),
     };
 
     renderInput(name, label, { type = "text", isReadonly = false, placeholder = '' } = {}) {
@@ -96,11 +98,18 @@ class ContactBlock extends Form {
                     </div>
                     <Map />
                 </div>
-                <form className="contact__email aos-overflow-hidden" data-aos="fade-left" onSubmit={this.handleSubmit}>
+                <form className="contact__email aos-overflow-hidden" data-aos="fade-left" onSubmit={this.handleSubmit}>                    
                     {this.renderInput('name', '', { placeholder: 'Nombre' })}
                     {this.renderInput('email', '', { placeholder: 'Email' })}
                     {this.renderInput('subject', '', { placeholder: 'Asunto' })}
                     {this.renderTextArea('message', '', 'Comentario')}
+                    <label className='checkbox-label'>
+                      <input name="sendCopy" id="sendCopy" type="checkbox" className='checkbox checkbox--primary' checked={this.state.data.sendCopy} onChange={ (e) => {
+                        const {data} = this.state;
+                        data.sendCopy = !this.state.data.sendCopy;
+                        this.setState({ data });
+                        } } /> Deseo recibir una copia en mi correo.
+                    </label>
                     {this.renderButton('Enviar')}
                 </form>
             </div>

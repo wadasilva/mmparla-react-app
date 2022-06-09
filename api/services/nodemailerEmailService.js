@@ -57,75 +57,85 @@ module.exports.send = function (
   isHtml = false,
   { fromFriendlyName = null, replyTo = null, cc = null, bcc = null } = {}
 ) {
-  const message = { to, from, subject };
+  return new Promise(async (resolve, reject) => {
+    try {
+      const message = { to, from, subject };
 
-  const rules = {
-    from: Joi.string().required().max(100).email(),
-    subject: Joi.string().min(3).max(500),
-  };
+      const rules = {
+        from: Joi.string().required().max(100).email(),
+        subject: Joi.string().min(3).max(500),
+      };
 
-  if (to) {
-    message.to = to;
+      if (to) {
+        message.to = to;
 
-    rules.to = Joi.string().max(100).email();
-    if (Array.isArray(to)) {
-      rules.to = Joi.array().items(Joi.string().max(100).email());
+        rules.to = Joi.string().max(100).email();
+        if (Array.isArray(to)) {
+          rules.to = Joi.array().items(Joi.string().max(100).email());
+        }
+      }
+
+      if (cc) {
+        message.cc = cc;
+
+        rules.cc = Joi.string().max(100).email();
+        if (Array.isArray(cc))
+          rules.cc = Joi.array().items(Joi.string().max(100).email());
+      }
+
+      if (bcc) {
+        message.bcc = bcc;
+
+        rules.bcc = Joi.string().max(100).email();
+        if (Array.isArray(bcc))
+          rules.bcc = Joi.array().items(Joi.string().max(100).email());
+      }
+
+      if (replyTo) {
+        message.replyTo = replyTo;
+
+        rules.replyTo = Joi.string().max(100).email();
+      }
+
+      if (isHtml) {
+        message.html = body;
+
+        rules.html = Joi.string().required();
+      } else {
+        message.text = body;
+
+        rules.text = Joi.string().required();
+      }
+
+      let schema = Joi.object(rules);
+      let validationResult = schema.validate(message);
+
+      if (validationResult.error?.details) {
+        reject(
+          validationResult.error?.details[0].message ?? "Error sending email."
+        );
+      }
+
+      schema = Joi.object({ fromFriendlyName: Joi.string().max(50) });
+      validationResult = schema.validate({
+        fromFriendlyName: fromFriendlyName,
+      });
+      if (validationResult.error?.details) {
+        reject(
+          validationResult.error?.details[0].message ?? "Error sending email."
+        );
+      }
+
+      if (fromFriendlyName) {
+        message.from = `"${fromFriendlyName}" ${from}`;
+      }
+
+      message.sender = from;
+
+      const result = await transporter.sendMail(message);
+      resolve(result);
+    } catch (err) {
+      reject(err);
     }
-  }
-
-  if (cc) {
-    message.cc = cc;
-
-    rules.cc = Joi.string().max(100).email();
-    if (Array.isArray(cc))
-      rules.cc = Joi.array().items(Joi.string().max(100).email());
-  }
-
-  if (bcc) {
-    message.bcc = bcc;
-
-    rules.bcc = Joi.string().max(100).email();
-    if (Array.isArray(bcc))
-      rules.bcc = Joi.array().items(Joi.string().max(100).email());
-  }
-
-  if (replyTo) {
-    message.replyTo = replyTo;
-
-    rules.replyTo = Joi.string().max(100).email();
-  }
-
-  if (isHtml) {
-    message.html = body;
-
-    rules.html = Joi.string().max(500).required();
-  } else {
-    message.text = body;
-
-    rules.text = Joi.string().max(500).required();
-  }
-
-  let schema = Joi.object(rules);
-  let validationResult = schema.validate(message);
-  if (validationResult.error?.details)
-    throw Error(
-      validationResult.error?.details?.map((detail) => detail.message)[0] ??
-        "Error sending email."
-    );
-
-  schema = Joi.object({ fromFriendlyName: Joi.string().max(50) });
-  validationResult = schema.validate({ fromFriendlyName: fromFriendlyName });
-  if (validationResult.error?.details)
-    throw Error(
-      validationResult.error?.details?.map((detail) => detail.message)[0] ??
-        "Error sending email."
-    );
-
-  if (fromFriendlyName) {
-    message.from = `"${fromFriendlyName}" ${from}`;
-  }
-
-  message.sender = from;
-
-  return transporter.sendMail(message);
+  });
 };

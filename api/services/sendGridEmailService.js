@@ -22,66 +22,70 @@ module.exports.send = function (
   isHtml = false,
   { fromFriendlyName = null, replyTo = null, cc = null, bcc = null } = {}
 ) {
-  const message = { to, subject };
+  return new Promise(async (resolve, reject) => {
+    try {
+      const message = { to, subject };
 
-  const rules = {
-    to: Joi.string().required().max(100).email(),
-    subject: Joi.string().min(3).max(500),
-  };
+      const rules = {
+        to: Joi.string().required().max(100).email(),
+        subject: Joi.string().min(3).max(500),
+      };
 
-  if (fromFriendlyName) {
-    message.from = { email: from, name: fromFriendlyName };
+      if (fromFriendlyName) {
+        message.from = { email: from, name: fromFriendlyName };
 
-    rules.from = Joi.object({
-      email: Joi.string().max(100).email(),
-      name: Joi.string().max(50),
-    });
-  } else {
-    message.from = from;
-    rules.from = Joi.string().max(100).email();
-  }
+        rules.from = Joi.object({
+          email: Joi.string().max(100).email(),
+          name: Joi.string().max(50),
+        });
+      } else {
+        message.from = from;
+        rules.from = Joi.string().max(100).email();
+      }
 
-  if (cc) {
-    message.cc = cc;
+      if (cc) {
+        message.cc = cc;
 
-    rules.cc = Joi.string().max(100).email();
-    if (Array.isArray(cc))
-      rules.cc = Joi.array().items(Joi.string().max(100).email());
-  }
+        rules.cc = Joi.string().max(100).email();
+        if (Array.isArray(cc))
+          rules.cc = Joi.array().items(Joi.string().max(100).email());
+      }
 
-  if (bcc) {
-    message.bcc = bcc;
+      if (bcc) {
+        message.bcc = bcc;
 
-    rules.bcc = Joi.string().max(100).email();
-    if (Array.isArray(bcc))
-      rules.bcc = Joi.array().items(Joi.string().max(100).email());
-  }
+        rules.bcc = Joi.string().max(100).email();
+        if (Array.isArray(bcc))
+          rules.bcc = Joi.array().items(Joi.string().max(100).email());
+      }
 
-  if (replyTo) {
-    message.replyTo = replyTo;
+      if (replyTo) {
+        message.replyTo = replyTo;
 
-    rules.replyTo = Joi.string().max(100).email();
-  }
+        rules.replyTo = Joi.string().max(100).email();
+      }
 
-  if (isHtml) {
-    message.html = body;
+      if (isHtml) {
+        message.html = body;
 
-    rules.html = Joi.string().max(500).required();
-  } else {
-    message.text = body;
+        rules.html = Joi.string().required();
+      } else {
+        message.text = body;
 
-    rules.text = Joi.string().max(500).required();
-  }
+        rules.text = Joi.string().required();
+      }
 
-  logger.debug(`nodemailer send() => ${JSON.stringify(message)}`);
+      const schema = Joi.object(rules);
+      const validationResult = schema.validate(message);
+      if (validationResult.error?.details)
+        reject(
+          validationResult.error?.details[0].message ?? "Error sending email."
+        );
 
-  const schema = Joi.object(rules);
-  const validationResult = schema.validate(message);
-  if (validationResult.error?.details)
-    throw Error(
-      validationResult.error?.details?.map((detail) => detail.message)[0] ??
-        "Error sending email."
-    );
-
-  return sgMail.send(message);
+      const result = await sgMail.send(message);
+      resolve(result);
+    } catch (err) {
+      reject(err);
+    }
+  });
 };

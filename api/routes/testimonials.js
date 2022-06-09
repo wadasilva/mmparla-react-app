@@ -6,6 +6,7 @@ const Testimonial = require("../models/testimonial");
 const Invitation = require("../models/invitation");
 const Organization = require("../models/organization");
 const emailService = require("../services/nodemailerEmailService");
+const templateService = require("../services/templateService");
 const router = express.Router();
 const { logger, sentryLogger } = require("../startup/logging");
 const auth = require("../middleware/auth");
@@ -40,49 +41,65 @@ router.post("/", async (req, res) => {
     code: Joi.required(),
   });
 
-  const validationResult = schema.validate(req.body);
-  if (validationResult.error?.details)
-    return res
-      .status(400)
-      .send(validationResult.error?.details.map((detail) => detail.message));
+  try {
+    const validationResult = schema.validate(req.body);
+    if (validationResult.error?.details)
+      return res
+        .status(400)
+        .send(validationResult.error?.details.map((detail) => detail.message));
 
-  const invitation = await Invitation.findOne({ _id: req.body.code });
-  if (!invitation || invitation?.status == "finished")
-    return res.status(200).send("provided code is not valid");
+    const invitation = await Invitation.findOne({ _id: req.body.code });
+    if (!invitation || invitation?.status == "finished")
+      return res.status(200).send("provided code is not valid");
 
-  const testimonial = new Testimonial(req.body);
-  testimonial.invitation = invitation._id;
-  testimonial.organization = invitation.organization._id;
-  await testimonial.save();
+    const testimonial = new Testimonial(req.body);
+    testimonial.invitation = invitation._id;
+    testimonial.organization = invitation.organization._id;
+    await testimonial.save();
 
-  invitation.status = "finished";
-  await invitation.save();
+    invitation.status = "finished";
+    await invitation.save();
 
-  // module.exports.sendNewTestimonialNotification = async (email) => {
-  //   const info = await transporterWithTemplate.sendMail({
-  //     from: config.get("emailService.smtpEmail"),
-  //     to: config.get("emailService.smtpEmail"),
-  //     subject: "Nuevo testimonial de un cliente!!!",
-  //     template: "new-testimonial-notification",
-  //     context: {
-  //       email: config.get("emailService.smtpUser"),
-  //       endpoint: `${config.get("webAppUrl")}/#testimonial-block`,
-  //     },
-  //   });
+    // module.exports.sendNewTestimonialNotification = async (email) => {
+    //   const info = await transporterWithTemplate.sendMail({
+    //     from: config.get("emailService.smtpEmail"),
+    //     to: config.get("emailService.smtpEmail"),
+    //     subject: "Nuevo testimonial de un cliente!!!",
+    //     template: "new-testimonial-notification",
+    //     context: {
+    //       email: config.get("emailService.smtpUser"),
+    //       endpoint: `${config.get("webAppUrl")}/#testimonial-block`,
+    //     },
+    //   });
 
-  //   console.log("Message sent: %s", info.messageId);
-  // };
+    //   console.log("Message sent: %s", info.messageId);
+    // };
 
-  const result = await emailService.send(
-    req.body.email,
-    config.get("emailService.smtpEmail"),
-    "Nuevo testimonial de un cliente!!!",
-    "This is a test body"
-  );
+    const template = await templateService.compile(
+      "new-testimonial-notification.hbs",
+      {
+        email: req.body.email.split("@")[0],
+        endpoint: config.get("webAppUrl"),
+      }
+    );
 
-  console.log("Message sent: %s", result.messageId);
+    const options = { fromFriendlyName: "Montaje de Muebles Parla" };
 
-  return res.status(200).send(testimonial);
+    const result = await emailService.send(
+      req.body.email,
+      config.get("emailService.smtpEmail"),
+      "Nuevo testimonial de un cliente!",
+      template,
+      true,
+      options
+    );
+
+    logger.info(`Message sent: ${info.messageId}`);
+
+    return res.status(200).send(testimonial);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
 });
 
 router.get("/", async (req, res) => {
@@ -158,39 +175,50 @@ router.post("/invite", auth, async (req, res) => {
     logger.debug(`creating invitation for ${req.body.email}`);
 
     let invitation = await createInvitationMessage(req.body);
-    if (invitation.status != "finished") {
-      // module.exports.sendInvitationMessage = async (email, code) => {
-      //   const info = await transporterWithTemplate.sendMail({
-      //     from: config.get("emailService.smtpUser"),
-      //     to: email,
-      //     subject: "Invitación para valorar el servicio prestado por MMParla",
-      //     template: "testimonial-invitation",
-      //     context: {
-      //       email: email,
-      //       endpoint: `${config.get("webAppUrl")}/testimonial/${code}`,
-      //     },
-      //   });
+    if (invitation.status === "finished") return res.status(200).send();
 
-      //   console.log("Message sent: %s", info.messageId);
-      // };
+    // module.exports.sendInvitationMessage = async (email, code) => {
+    //   const info = await transporterWithTemplate.sendMail({
+    //     from: config.get("emailService.smtpUser"),
+    //     to: email,
+    //     subject: "Invitación para valorar el servicio prestado por MMParla",
+    //     template: "testimonial-invitation",
+    //     context: {
+    //       email: email,
+    //       endpoint: `${config.get("webAppUrl")}/testimonial/${code}`,
+    //     },
+    //   });
 
-      const options = {
-        fromFriendlyName: "Montaje de Muebles Parla",
-        replyTo: config.get("emailService.smtpEmail"),
-      };
+    //   console.log("Message sent: %s", info.messageId);
+    // };
 
-      const result = await emailService.send(
-        req.body.email,
-        config.get("emailService.smtpEmail"),
-        "Invitación para valorar el servicio prestado por MMParla",
-        "This is a test body!",
-        false,
-        options
-      );
+    const template = await templateService.compile(
+      "testimonial-invitation.hbs",
+      {
+        email: req.body.email.split("@")[0],
+        endpoint: `${config.get("webAppUrl")}/testimonial/${invitation._id}`,
+      }
+    );
 
-      console.log("Message sent: %s", result.messageId);
-    }
+    const options = {
+      fromFriendlyName: "Montaje de Muebles Parla",
+      replyTo: config.get("emailService.smtpEmail"),
+    };
+
+    const result = await emailService.send(
+      req.body.email,
+      config.get("emailService.smtpEmail"),
+      "Invitación para valorar el servicio prestado por MMParla",
+      template,
+      true,
+      options
+    );
+
+    await invitation.save();
+
+    logger.info(`Message sent: ${info.messageId}`);
   } catch (error) {
+    logger.error(error);
     sentryLogger.log(error);
   }
 
@@ -210,8 +238,6 @@ async function createInvitationMessage(body) {
       invitation.status = "pending";
       invitation.email = body.email;
       invitation.organization = body.organization;
-
-      await invitation.save();
 
       resolve(invitation);
     } catch (err) {
