@@ -7,6 +7,7 @@ const organizations = require("../routes/organizations");
 const contact = require("../routes/contact");
 const users = require("../routes/user");
 const auth = require("../routes/auth");
+const utils = require("../routes/utils");
 const cors = require("cors");
 const verifyUser = require("../middleware/verifyUser");
 
@@ -31,4 +32,5 @@ module.exports = function (app) {
   app.use("/api/users", users);
   app.use("/api/auth", auth);
   app.use("/api/contact", contact(app));
+  app.use("/api/utils", utils);
 };

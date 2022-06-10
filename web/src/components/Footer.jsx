@@ -1,6 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import {getCurrentTime} from '../services/utilitiesService';
+import logger from '../services/logService';
 
 const Footer = () => {
+    const [currentYear, setCurrentYear] = useState(Date.now.getFullYear);
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const {data} = await getCurrentTime();
+                const date = new Date(Date.parse(data));
+                setCurrentYear(date.getFullYear());
+            } catch (err) {
+                logger.log(err);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <footer className="footer">
           <div className="container">

@@ -77,7 +77,9 @@ userSchema.methods.validatePassword = function (password) {
 };
 
 userSchema.methods.generateAuthToken = function () {
-  return jwt.sign({ _id: this._id }, config.get("jwtPrivateKey"));
+  return jwt.sign({ _id: this._id }, config.get("jwtPrivateKey"), {
+    expiresIn: "1h",
+  });
 };
 
 const User = mongoose.model("User", userSchema);

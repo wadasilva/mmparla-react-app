@@ -15,6 +15,11 @@ axios.interceptors.response.use(null, (error) => {
     toast.error("An unexpected error ocurred.");
   }
 
+  if (expectedError && error.response.status === 401) {
+    localStorage.removeItem("token");
+    return window.location("/auth");
+  }
+
   return Promise.reject(error);
 });
 
