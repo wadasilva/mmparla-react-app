@@ -19,7 +19,7 @@ class FrmOrganization extends Form {
   state = this.initialState;
 
   schema = {
-    name: Joi.string().required().min(3).max(255).label("Name"),
+    name: Joi.string().required().min(3).max(255).label("Nombre"),
     photo: Joi.object({
       image: Joi.binary()
       .encoding("base64")
@@ -28,7 +28,7 @@ class FrmOrganization extends Form {
       .label("Logo"),
       format: Joi.string()
       .required()
-      .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions")
+      .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "solo estan permitidos ficheros con formato de imagen")
     })
   };
 

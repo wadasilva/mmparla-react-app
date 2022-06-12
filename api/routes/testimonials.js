@@ -1,7 +1,8 @@
 const express = require("express");
 const isBase64 = require("is-base64");
 const config = require("config-secrets");
-const Joi = require("joi");
+const messages = require("../translation/validation-translations");
+const Joi = require("joi").defaults((schema) => schema.options({ messages }));
 const Testimonial = require("../models/testimonial");
 const Invitation = require("../models/invitation");
 const Organization = require("../models/organization");
@@ -24,13 +25,16 @@ router.post("/", async (req, res) => {
           )
             //1048576 bytes = 1MB
             return helpers.message(
-              `Picture should not be greater than ${config.get(
+              `Imagen no debe ser mayor de ${config.get(
                 "upload.maxSize"
               )} ${config.get("upload.unit")}`
             );
-        }, "custom validation"),
+        }, "Tamaño de imagen excedido"),
       format: Joi.string()
-        .pattern(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions")
+        .pattern(
+          /^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i,
+          "Solo son permitidos ficheros con formato de imagen"
+        )
         .required(),
     }),
     firstName: Joi.string().min(3).max(100).required(),
@@ -42,15 +46,22 @@ router.post("/", async (req, res) => {
   });
 
   try {
-    const validationResult = schema.validate(req.body);
+    const validationResult = schema.validate(req.body, {
+      errors: { language: "es" },
+    });
+
+    console.log(validationResult.error);
     if (validationResult.error?.details)
       return res
         .status(400)
         .send(validationResult.error?.details.map((detail) => detail.message));
 
     const invitation = await Invitation.findOne({ _id: req.body.code });
-    if (!invitation || invitation?.status == "finished")
-      return res.status(200).send("provided code is not valid");
+
+    if (!invitation || invitation?.status === "finished") {
+      logger.error("invitation is finished");
+      return res.status(403).send("Codigo invalido");
+    }
 
     const testimonial = new Testimonial(req.body);
     testimonial.invitation = invitation._id;
@@ -59,21 +70,6 @@ router.post("/", async (req, res) => {
 
     invitation.status = "finished";
     await invitation.save();
-
-    // module.exports.sendNewTestimonialNotification = async (email) => {
-    //   const info = await transporterWithTemplate.sendMail({
-    //     from: config.get("emailService.smtpEmail"),
-    //     to: config.get("emailService.smtpEmail"),
-    //     subject: "Nuevo testimonial de un cliente!!!",
-    //     template: "new-testimonial-notification",
-    //     context: {
-    //       email: config.get("emailService.smtpUser"),
-    //       endpoint: `${config.get("webAppUrl")}/#testimonial-block`,
-    //     },
-    //   });
-
-    //   console.log("Message sent: %s", info.messageId);
-    // };
 
     const template = await templateService.compile(
       "new-testimonial-notification.hbs",
@@ -85,7 +81,7 @@ router.post("/", async (req, res) => {
 
     const options = { fromFriendlyName: "Montaje de Muebles Parla" };
 
-    const result = await emailService.send(
+    const info = await emailService.send(
       req.body.email,
       config.get("emailService.smtpEmail"),
       "Nuevo testimonial de un cliente!",
@@ -98,6 +94,8 @@ router.post("/", async (req, res) => {
 
     return res.status(200).send(testimonial);
   } catch (err) {
+    logger.log(err);
+    sentryLogger(err);
     return res.status(500).send(err);
   }
 });
@@ -128,9 +126,9 @@ router.get("/", async (req, res) => {
 });
 
 router.put("/", auth, async (req, res) => {
-  if (!req.body.id) return res.status(400).send("id is required");
+  if (!req.body.id) return res.status(400).send("Id es requerido");
   if (req.body.accepted == null || req.body.accepted == undefined)
-    return res.status(400).send("accepted is required");
+    return res.status(400).send("Campo accepted es requerido");
 
   const testimonial = await Testimonial.findOne({ _id: req.body.id });
   if (!testimonial) return res.status(404).send();
@@ -145,11 +143,12 @@ router.get("/invite/:code", async (req, res) => {
   let invitation = null;
   try {
     invitation = await Invitation.findOne({ _id: req.params.code });
+    if (!invitation || invitation.status === "finished")
+      return res.status(404).send("Codigo invalido");
   } catch (error) {
-    console.log(error);
+    logger.error(error);
+    sentryLogger.log(error);
   }
-
-  if (!invitation) return res.status(404).send("Invitation not found");
 
   return res.status(200).send(invitation);
 });
@@ -160,7 +159,11 @@ router.post("/invite", auth, async (req, res) => {
     email: Joi.string().required().email(),
   });
 
-  const validationResult = schema.validate(req.body);
+  const validationResult = schema.validate(req.body, {
+    errors: { language: "es" },
+  });
+
+  console.log(validationResult.error);
   if (validationResult.error?.details)
     return res
       .status(400)
@@ -169,28 +172,14 @@ router.post("/invite", auth, async (req, res) => {
   const organization = await Organization.findOne({
     _id: req.body.organization,
   });
-  if (!organization) return res.status(404).send("Organization not found");
+
+  if (!organization) return res.status(404).send("Organización no existente");
 
   try {
     logger.debug(`creating invitation for ${req.body.email}`);
 
     let invitation = await createInvitationMessage(req.body);
     if (invitation.status === "finished") return res.status(200).send();
-
-    // module.exports.sendInvitationMessage = async (email, code) => {
-    //   const info = await transporterWithTemplate.sendMail({
-    //     from: config.get("emailService.smtpUser"),
-    //     to: email,
-    //     subject: "Invitación para valorar el servicio prestado por MMParla",
-    //     template: "testimonial-invitation",
-    //     context: {
-    //       email: email,
-    //       endpoint: `${config.get("webAppUrl")}/testimonial/${code}`,
-    //     },
-    //   });
-
-    //   console.log("Message sent: %s", info.messageId);
-    // };
 
     const template = await templateService.compile(
       "testimonial-invitation.hbs",
@@ -205,10 +194,12 @@ router.post("/invite", auth, async (req, res) => {
       replyTo: config.get("emailService.smtpEmail"),
     };
 
-    const result = await emailService.send(
+    const info = await emailService.send(
       req.body.email,
       config.get("emailService.smtpEmail"),
-      "Invitación para valorar el servicio prestado por MMParla",
+      `¡Hola, ${
+        req.body.email.split("@")[0]
+      }! Que tal ha sido tu experiencia con Montaje de Muebles Parla?`,
       template,
       true,
       options
@@ -217,9 +208,9 @@ router.post("/invite", auth, async (req, res) => {
     await invitation.save();
 
     logger.info(`Message sent: ${info.messageId}`);
-  } catch (error) {
-    logger.error(error);
-    sentryLogger.log(error);
+  } catch (err) {
+    logger.error(err);
+    sentryLogger.log(err);
   }
 
   return res.status(200).send();

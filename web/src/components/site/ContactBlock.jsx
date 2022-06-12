@@ -22,11 +22,11 @@ class ContactBlock extends Form {
     state = this.initialState;
     
     schema = {
-        name: Joi.string().required().min(3).max(100).label('Name'),
+        name: Joi.string().required().min(3).max(100).label('Nombre'),
         email: Joi.string().required().email().label('Email'),
-        subject: Joi.string().optional().max(50).label('Subject'),
-        message: Joi.string().optional().min(10).max(500).label('Message'),
-        sendCopy: Joi.bool().optional().label('Send copy'),
+        subject: Joi.string().optional().max(50).label('Asunto'),
+        message: Joi.string().optional().min(10).max(500).label('Comentario'),
+        sendCopy: Joi.bool().optional().label('Enviar Copia'),
     };
 
     renderInput(name, label, { type = "text", isReadonly = false, placeholder = '' } = {}) {

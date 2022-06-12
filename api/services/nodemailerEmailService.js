@@ -3,7 +3,10 @@ const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 const fs = require("fs");
 const { logger, sentryLogger } = require("../startup/logging");
-const Joi = require("joi");
+const errorMessages = require("../translation/validation-translations");
+const Joi = require("joi").defaults((schema) =>
+  schema.options({ messages: errorMessages })
+);
 
 let transporterWithTemplate = null;
 let transporter = null;
@@ -108,21 +111,29 @@ module.exports.send = function (
       }
 
       let schema = Joi.object(rules);
-      let validationResult = schema.validate(message);
+      let validationResult = schema.validate(message, {
+        errors: { language: "es" },
+      });
 
       if (validationResult.error?.details) {
         reject(
-          validationResult.error?.details[0].message ?? "Error sending email."
+          validationResult.error?.details[0].message ??
+            "Error en la validación de datos del correo."
         );
       }
 
       schema = Joi.object({ fromFriendlyName: Joi.string().max(50) });
-      validationResult = schema.validate({
-        fromFriendlyName: fromFriendlyName,
-      });
+      validationResult = schema.validate(
+        {
+          fromFriendlyName: fromFriendlyName,
+        },
+        { errors: { language: "es" } }
+      );
+
       if (validationResult.error?.details) {
         reject(
-          validationResult.error?.details[0].message ?? "Error sending email."
+          validationResult.error?.details[0].message ??
+            "Error en la validación de datos del correo."
         );
       }
 
@@ -135,6 +146,7 @@ module.exports.send = function (
       const result = await transporter.sendMail(message);
       resolve(result);
     } catch (err) {
+      sentryLogger(err);
       reject(err);
     }
   });

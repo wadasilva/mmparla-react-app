@@ -28,7 +28,7 @@ const Footer = () => {
                   <li className="list__item"><a href="#services-block">Servicios</a></li>
                   <li className="list__item"><a href="#work-block">Trabajos</a></li>
                   <li className="list__item"><a href="#brand-block">Marcas</a></li>
-                  <li className="list__item"><a href="#testimonial-block">Opiniones</a></li>
+                  <li className="list__item"><a href="#testimonial-block">Testimonial</a></li>
                   <li className="list__item"><a href="#contact-block">Contacto</a></li>
               </ul>
               <div className="footer__followus">

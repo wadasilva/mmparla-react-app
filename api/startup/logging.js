@@ -44,15 +44,17 @@ const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
 
 const transaction = Sentry.startTransaction({
-  op: "test",
-  name: "My First Test Transaction",
+  op: "main",
+  name: "Main Transaction",
 });
 
 const sentryLogger = {
   init: () => {
     Sentry.init({
-      dsn: "https://ca41d76386e24d4284383ba22e88aefd@o1237225.ingest.sentry.io/6443107",
-
+      dsn: config.get("sentryService.dsn"),
+      environment: process.env.NODE_ENV,
+      release: `${process.env.npm_package_name}@${process.env.npm_package_version}`,
+      debug: process.env.NODE_ENV === "development",
       // Set tracesSampleRate to 1.0 to capture 100%
       // of transactions for performance monitoring.
       // We recommend adjusting this value in production

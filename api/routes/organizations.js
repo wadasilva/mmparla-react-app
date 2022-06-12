@@ -1,10 +1,11 @@
 const express = require("express");
 const isBase64 = require("is-base64");
 const config = require("config");
-const Joi = require("joi");
+const messages = require("../translation/validation-translations");
+const Joi = require("joi").defaults((schema) => schema.options({ messages }));
 const Organization = require("../models/organization");
 const router = express.Router();
-const { logger } = require("../startup/logging");
+const { logger, sentryLogger } = require("../startup/logging");
 const auth = require("../middleware/auth");
 
 const schema = Joi.object({
@@ -18,11 +19,11 @@ const schema = Joi.object({
         )
           //1048576 bytes = 1MB
           return helpers.message(
-            `Picture should not be greater than ${config.get(
+            `Imagen no debe ser mayor que ${config.get(
               "upload.maxSize"
             )} ${config.get("upload.unit")}`
           );
-      }, "custom validation"),
+      }, "Tamaño de imagen excedido"),
     format: Joi.string()
       .pattern(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions")
       .required(),
@@ -31,23 +32,37 @@ const schema = Joi.object({
 });
 
 router.post("/", auth, async (req, res) => {
-  const validationResult = schema.validate(req.body);
-  if (validationResult.error?.details)
-    return res
-      .status(400)
-      .send(validationResult.error?.details.map((detail) => detail.message));
+  try {
+    const validationResult = schema.validate(req.body, {
+      errors: { language: "es" },
+    });
 
-  const existingOrganization = await Organization.findOne({
-    name: req.body.name,
-  });
+    console.log(validationResult.error);
+    if (validationResult.error?.details)
+      return res
+        .status(400)
+        .send(validationResult.error?.details.map((detail) => detail.message));
 
-  if (existingOrganization)
-    return res.status(400).send("Duplicated name for organization.");
+    const existingOrganization = await Organization.findOne({
+      name: req.body.name,
+    });
 
-  const organization = new Organization(req.body);
-  await organization.save();
+    if (existingOrganization)
+      return res
+        .status(400)
+        .send(
+          `Ya existe una organización con el nombre ${existingOrganization.name}.`
+        );
 
-  return res.status(200).send(organization);
+    const organization = new Organization(req.body);
+    await organization.save();
+
+    return res.status(200).send(organization);
+  } catch (err) {
+    logger.error(err);
+    sentryLogger.log(err);
+    return res.status(500).send(err);
+  }
 });
 
 router.get("/", auth, async (req, res) => {
@@ -62,10 +77,10 @@ router.get("/", auth, async (req, res) => {
 });
 
 router.put("/:id", auth, async (req, res) => {
-  if (!req.params.id) return res.status(400).send("id is required");
+  if (!req.params.id) return res.status(400).send("id es requerido");
 
   const organization = await Organization.findOne({ _id: req.params.id });
-  if (!organization) return res.status(404).send("Organization not found.");
+  if (!organization) return res.status(404).send("Organización no encontrada.");
 
   const validationResult = schema.validate(req.body);
   if (validationResult.error?.details)
@@ -77,7 +92,11 @@ router.put("/:id", auth, async (req, res) => {
     name: req.body.name,
   });
   if (existingOrganization)
-    return res.status(400).send("Duplicated name for organization.");
+    return res
+      .status(400)
+      .send(
+        `Ya existe una organización con el nombre ${existingOrganization.name}.`
+      );
 
   organization.name = req.body.name;
   organization.photo.image = req.body.photo.image;

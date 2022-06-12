@@ -44,7 +44,7 @@ const NavBar = ({ user }) => {
         </li>
         <li className="nav__item">
           <HashLink className="link" smooth to={"/#testimonial-block"}>
-            testimonios
+            testimonial
           </HashLink>
         </li>
         <li className="nav__item">
@@ -55,7 +55,7 @@ const NavBar = ({ user }) => {
         {!user && (
           <li className="nav__item">
             <Link className="link" to={"/auth"}>
-              Login
+              Entrar
               <svg className="icon icon--x-small">
                 <use xlinkHref="images/sprite.svg#sign-in-alt"></use>
               </svg>
@@ -65,7 +65,7 @@ const NavBar = ({ user }) => {
         {user && (
           <li className="nav__item">
             <Link className="link" to={"/logout"}>
-              Logout
+              Sair
               <svg className="icon icon--x-small">
                 <use xlinkHref="images/sprite.svg#sign-out-alt"></use>
               </svg>

@@ -31,10 +31,10 @@ class FrmTestimonial extends Form {
 
   schema = {
     code: Joi.string().required().label("Code"),
-    firstName: Joi.string().required().min(3).max(100).label("First name"),
-    lastName: Joi.string().required().min(3).max(100).label("Last name"),
-    rol: Joi.string().required().min(3).max(50).label("Role"),
-    message: Joi.string().required().min(10).max(500).label("Comment"),
+    firstName: Joi.string().required().min(3).max(100).label("Nombre"),
+    lastName: Joi.string().required().min(3).max(100).label("Apellidos"),
+    rol: Joi.string().required().min(3).max(50).label("Cargo"),
+    message: Joi.string().required().min(10).max(500).label("Commentario"),
     email: Joi.string().optional().max(100).label("Email"),
     photo: Joi.object({
       image: Joi.binary()
@@ -43,7 +43,7 @@ class FrmTestimonial extends Form {
         .label("Photo"),
       format: Joi.string()
         .required()
-        .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions"),
+        .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Solo son aceptos ficheros con formato de imagen"),
     }),
   };
 
@@ -63,34 +63,52 @@ class FrmTestimonial extends Form {
     Modal.setAppElement("#root");
 
     //capture testimonial id and fetch data from the server
-    const id = this.props.router.params.code;
-    const { data } = this.state;
-    data.code = id;
+    const id = this.props.router.params.code;    
 
     try {
       const result = await testimonialsService.getInvitation(id);
-      data.email = result.data.email;
-    } catch (error) {}
+      const { data } = this.state;
 
-    this.setState({ data });
+      data.code = id;
+      this.setState({ data });
+      data.email = result.data.email;
+      logger.log(data);
+    } catch (error) {
+
+      const {status, data} = error.response;      
+      if (status === 404) {
+        toast.warning(`El recurso que buscas ya no se encuentra disponible.`, { autoClose: 8000 });
+        return this.props.router.navigate('/#testimonial-block', { replace: true });
+      } else {
+        logger.error(error);
+        toast.error(`Disculpe, algo ha salido mal, intente nuevamente por favor. ${data}`, { autoClose: 8000 });
+      }            
+    }    
   }
 
   async doSubmit() {
     try {      
       const { status, data } = await testimonialsService.addTestimonial(this.state.data);
-      
+
       if (status === 200) {
         toast.success('Listo! Muchas gracias por tu colaboración!', { autoClose: 8000 });
         return this.props.router.navigate('/#testimonial-block', { replace: true });
       }      
     } catch (error) {
-      logger.log(JSON.stringify(error.response ?? error));
-      toast.error('Disculpe, algo ha salido mal, intente nuevamente por favor.', { autoClose: 8000 });
+      const {status, data} = error.response;      
+      logger.log(JSON.stringify(error?.response ?? error));
+
+      if (status === 403) {
+        toast.warning(`El recurso que buscas ya no se encuentra disponible.`, { autoClose: 8000 });
+        return this.props.router.navigate('/#testimonial-block', { replace: true });
+      } else {
+        toast.error(`Disculpe, algo ha salido mal, intente nuevamente por favor. ${data}`, { autoClose: 8000 });
+      }
     }
   }
 
   render() {
-    return (
+    return (this.state.data.code &&
       <form
         className="container"
         style={{ padding: "10%", display: "flex", flexDirection: "column" }}

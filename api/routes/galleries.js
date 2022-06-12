@@ -4,7 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const isBase64 = require("is-base64");
 const express = require("express");
-const Joi = require("joi");
+const messages = require("../translation/validation-translations");
+const Joi = require("joi").defaults((schema) => schema.options({ messages }));
 const { logger } = require("../startup/logging");
 const router = express.Router();
 const imageService = require("../services/imageService");
@@ -12,9 +13,6 @@ const config = require("config");
 const auth = require("../middleware/auth");
 
 router.post("/", auth, async (req, res) => {
-  // console.log('req.body');
-  // console.log(req.body);
-
   const schema = Joi.object({
     image: Joi.string()
       .base64()
@@ -32,26 +30,22 @@ router.post("/", auth, async (req, res) => {
       }, "custom validation"),
     description: Joi.string().min(6).max(255).required(),
     format: Joi.string()
-      .pattern(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions")
+      .pattern(
+        /^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i,
+        "Solo son permitidos ficheros con formatos de imagens"
+      )
       .required(),
   });
 
-  const validationResult = schema.validate(req.body);
+  const validationResult = schema.validate(req.body, {
+    errors: { language: "es" },
+  });
 
   if (validationResult.error?.details) {
     return res
       .status(400)
       .send(validationResult.error?.details.map((detail) => detail.message));
   }
-
-  // if (Object.keys(req.body).length === 0) return res.status(400).send();
-  // if (!req.body.image) return res.status(400).send();
-  // if (!isBase64(req.body.image)) return res.status(400).send();
-  // if (new Buffer.from(req.body.image).length > 5242880) return res.status(400).send();
-  // if (!req.body.format) return res.status(400).send();
-  // if (!req.body.description) return res.status(400).send();
-  // if (req.body.description.length < 6) return res.status(400).send();
-  // if (req.body.description.length > 255) return res.status(400).send();
 
   //Download
   const image = `data:image/${req.body.format};base64,${req.body.image}`;

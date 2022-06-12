@@ -27,7 +27,6 @@ class FrmLogin extends Form {
           await auth.login(email, password);
 
           const { state } = this.props.router.location;
-          console.log(state);
           window.location = state ? state.from.pathname : '/';
         } catch (ex) {
           if (ex.response && ex.response.status === 400) {

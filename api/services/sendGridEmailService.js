@@ -1,7 +1,10 @@
 const config = require("config-secrets");
 const sgMail = require("@sendgrid/mail");
 const { logger, sentryLogger } = require("../startup/logging");
-const Joi = require("joi");
+const errorMessages = require("../translation/validation-translations");
+const Joi = require("joi").defaults((schema) =>
+  schema.options({ messages: errorMessages })
+);
 
 module.exports.init = function () {
   const apiKey = config.get("sendgridService.apiKey");
@@ -79,7 +82,8 @@ module.exports.send = function (
       const validationResult = schema.validate(message);
       if (validationResult.error?.details)
         reject(
-          validationResult.error?.details[0].message ?? "Error sending email."
+          validationResult.error?.details[0].message ??
+            "Error en la validación de datos del correo."
         );
 
       const result = await sgMail.send(message);

@@ -20,7 +20,7 @@ class FrmInvitation extends Form {
   state = this.initialState;
 
   schema = {
-    organization: Joi.string().required().label("Organization"),
+    organization: Joi.string().required().label("Organización"),
     email: Joi.string().required().max(100).email().label("Email"),
   };
 

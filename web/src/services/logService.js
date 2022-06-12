@@ -3,10 +3,11 @@ import { BrowserTracing } from "@sentry/tracing";
 
 function init() {
   Sentry.init({
-    dsn: "https://5b794d2be47c4b368a1d203c7abb0438@o1237225.ingest.sentry.io/6387561",
+    dsn: process.env.REACT_APP_SENTRY_DSN,
     integrations: [new BrowserTracing()],
-    release: "1.0.0",
-    environment: "development",
+    environment: process.env.NODE_ENV,
+    release: `${process.env.npm_package_name}@${process.env.npm_package_version}`,
+    debug: process.env.NODE_ENV === "development",
 
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.

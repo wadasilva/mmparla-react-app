@@ -101,12 +101,12 @@ class FrmGallery extends Form {
       .encoding("base64")
       .min(1)
       .max(config.upload.maxSize)
-      .label("Image"),
-    description: Joi.string().required().min(6).max(255).label('Description'),
+      .label("Imagen"),
+    description: Joi.string().required().min(6).max(255).label('Descripción'),
     format: Joi.string()
       .required()
-      .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Only image extentions")
-      .label('Format')
+      .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Solo estan permitidos ficheros del tipo imagen")
+      .label('Formato')
   };
 
   renderButton(label) {
@@ -147,7 +147,7 @@ class FrmGallery extends Form {
     });
   };
 
-  doSubmit = async () => {
+  processUpload = async () => {
     try {
       const { status, data } = await photoService.uploadPhoto(this.state.data);
 
@@ -158,6 +158,12 @@ class FrmGallery extends Form {
     } catch (error) {
       toast.error('Disculpe, algo ha salido mal, intente nuevamente por favor.', { autoClose: 8000 });
     }
+  };
+
+  doSubmit = async () => {
+    toast.info('Estamos procesando la imagen, te avisaremos cuando este todo ok!', { autoClose: 8000 });
+    this.processUpload();
+    this.setState(this.initialState);
   };
 
   componentDidMount() {

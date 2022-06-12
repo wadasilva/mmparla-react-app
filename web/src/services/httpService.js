@@ -16,8 +16,13 @@ axios.interceptors.response.use(null, (error) => {
   }
 
   if (expectedError && error.response.status === 401) {
+    toast.warning(
+      "La sesion se ha caducado, por favor, efectue el login nuevamente.",
+      { autoClose: 8000 }
+    );
     localStorage.removeItem("token");
-    return window.location("/auth");
+    window.location = "/auth";
+    return;
   }
 
   return Promise.reject(error);
