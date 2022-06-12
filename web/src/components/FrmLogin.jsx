@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import Form from "./common/form";
 import Input from "./common/input";
-import Joi from 'joi-browser';
 import logger from '../services/logService';
 import auth from '../services/authService';
 import { withRouter } from "./hoc/withRouter";
+import JoiValidate from 'joi';
+import messages from '../translation/validation-translations';
+const Joi = JoiValidate.defaults(schema => schema.options({ messages }));
 
 class FrmLogin extends Form {
     state = {
@@ -15,10 +17,10 @@ class FrmLogin extends Form {
         errors: {}
     };
 
-    schema = {
-        email: Joi.string().required().email().label('Email'),
-        password: Joi.string().required().label('Password')
-    };
+    schema = Joi.object({
+        email: Joi.string().required().email({ tlds: { allow: false } }).label('Email'),
+        password: Joi.string().required().label('Contraseña')
+    });
 
     doSubmit = async () => {
         const { email, password } = this.state.data;

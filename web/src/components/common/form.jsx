@@ -1,5 +1,5 @@
 import { Component } from "react";
-import Joi from "joi-browser";
+import Joi from '../../services/validationService';
 
 class Form extends Component {
   state = {
@@ -10,8 +10,8 @@ class Form extends Component {
   validate = () => {
     if (!this.schema) return null;
     
-    const options = { abortEarly: false };
-    const { error } = Joi.validate(this.state.data, this.schema, options);
+    const options = { abortEarly: false, errors: { language: "es" } };
+    const { error } = this.schema.validate(this.state.data, options);
     if (!error) return null;
 
     const errors = {};
@@ -21,10 +21,13 @@ class Form extends Component {
 
   validateProperty = ({ name, value }) => {
     if (!this.schema) return null;
-
+    
     const obj = { [name]: value };
-    const schema = { [name]: this.schema[name] };
-    const { error } = Joi.validate(obj, schema);
+    const rule = this.schema.extract(name);
+    const schema = Joi.object({ [name]: rule });
+    const { error } = schema.validate(obj, {
+      errors: { language: "es" },
+    });
 
     return error ? error.details[0].message : null;
   };
@@ -40,7 +43,7 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  handleChange = ({ currentTarget: input }) => {
+  handleChange = ({ currentTarget: input }) => {    
     const { errors } = { ...this.state };
     const errorMessage = this.validateProperty(input);
     if (errorMessage) errors[input.name] = errorMessage;

@@ -1,4 +1,3 @@
-import Joi from "joi-browser";
 import config from "../../config/config.json";
 import * as organizationService from "../../services/organizationService";
 import Input from "../common/input";
@@ -6,6 +5,7 @@ import InputUpload from "../common/InputUpload";
 import Form from "../common/form";
 import logger from "../../services/logService";
 import utils from "../../utils/uploadUtils";
+import Joi from '../../services/validationService';
 
 const fileTypes = ["GIF", "JPEG", "JPG", "TIFF", "PNG", "WEBP", "BMP"];
 
@@ -18,11 +18,11 @@ class FrmOrganization extends Form {
 
   state = this.initialState;
 
-  schema = {
+  schema = Joi.object({
     name: Joi.string().required().min(3).max(255).label("Nombre"),
     photo: Joi.object({
-      image: Joi.binary()
-      .encoding("base64")
+      image: Joi.string()
+      .base64()
       .min(1)
       .max(config.upload.maxSize)
       .label("Logo"),
@@ -30,7 +30,7 @@ class FrmOrganization extends Form {
       .required()
       .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "solo estan permitidos ficheros con formato de imagen")
     })
-  };
+  });
 
   async componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevState.file !== this.state.file) {
@@ -75,9 +75,12 @@ class FrmOrganization extends Form {
   };
 
   validateFileUpload = () => {
+    if (!this.schema) return;
+
     const obj = { ["photo"]: { ["image"]: this.state.data["photo"]["image"], ["format"]: this.state.data["photo"]["format"] } };
-    const schema = { ["photo"]: this.schema["photo"] };
-    const { error } = Joi.validate(obj, schema);
+    const rule = this.schema.extract('photo');
+    const schema = Joi.object({ ["photo"]: rule });
+    const { error } = schema.validate(obj, { errors: { language: 'es'}});
     const errors = { ...this.state.errors };
     
     if (error) errors["photo"] = error.details[0].message;

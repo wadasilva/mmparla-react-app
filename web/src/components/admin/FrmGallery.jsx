@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Joi from "joi-browser";
 import config from "../../config/config.json";
 import utils from "../../utils/uploadUtils";
 import logger from "../../services/logService";
@@ -11,6 +10,7 @@ import Input from '../common/input';
 import "react-image-crop/dist/ReactCrop.css";
 import * as photoService from '../../services/photoService';
 import { toast } from "react-toastify";
+import Joi from '../../services/validationService';
 
 const fileTypes = ["GIF", "JPEG", "JPG", "TIFF", "PNG", "WEBP", "BMP"];
 const styles = {
@@ -96,9 +96,9 @@ class FrmGallery extends Form {
 
   state = this.initialState;
 
-  schema = {
-    image: Joi.binary()
-      .encoding("base64")
+  schema = Joi.object({
+    image: Joi.string()
+      .base64()
       .min(1)
       .max(config.upload.maxSize)
       .label("Imagen"),
@@ -107,7 +107,7 @@ class FrmGallery extends Form {
       .required()
       .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Solo estan permitidos ficheros del tipo imagen")
       .label('Formato')
-  };
+  });
 
   renderButton(label) {
     return (
@@ -123,9 +123,12 @@ class FrmGallery extends Form {
   }
 
   validateFileUpload = () => {
+    if (!this.schema) return null;
+    
     const obj = { ["image"]: this.state["image"]["base64"] };
-    const schema = { ["image"]: this.schema["image"] };
-    const { error } = Joi.validate(obj, schema);
+    const rule = this.schema.extract('image');
+    const schema = Joi.object({ ["image"]: rule });
+    const { error } = schema.validate(obj, {errors: { language: "es" } });
     const errors = { ...this.state.errors };
 
     if (error) errors["image"] = error.details[0].message;
@@ -279,7 +282,7 @@ class FrmGallery extends Form {
             error={this.state.errors.image}
           />
           {this.renderInput('description', 'Descripción')}
-          <button type="submit" className="btn btn--info btn--small">
+          <button type="submit" className="btn btn--info btn--small" disabled={this.validate()}>
             Enviar
             <svg className="icon icon--small">
               <use xlinkHref="images/sprite.svg#upload-solid"></use>

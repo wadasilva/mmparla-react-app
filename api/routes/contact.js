@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
     const validationResult = schema.validate(req.body, {
       errors: { language: "es" },
     });
-    console.log(validationResult.error);
+
     if (validationResult.error?.details) {
       return res
         .status(400)

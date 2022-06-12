@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import Form from "../common/form";
 import Input from "../common/input";
 import Select from "../common/select";
-import Joi from "joi-browser";
 import * as organizationService from "../../services/organizationService";
 import * as testimonialService from "../../services/testimonialService";
 import { toast } from "react-toastify";
+import Joi from '../../services/validationService';
 
 class FrmInvitation extends Form {
   initialState = {
@@ -19,10 +19,10 @@ class FrmInvitation extends Form {
 
   state = this.initialState;
 
-  schema = {
+  schema = Joi.object({
     organization: Joi.string().required().label("Organización"),
-    email: Joi.string().required().max(100).email().label("Email"),
-  };
+    email: Joi.string().required().max(100).email({ tlds: { allow: false } }).label("Email"),
+  });
 
   async componentDidMount() {
     this.populateOrganizations();

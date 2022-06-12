@@ -4,7 +4,6 @@ import Input from "../common/input";
 import Select from "../common/select";
 import Textarea from "../common/textarea";
 import { withRouter } from "../hoc/withRouter";
-import Joi from "joi-browser";
 import Modal from "react-modal";
 import Avatar from "react-avatar-edit";
 import { toast } from "react-toastify";
@@ -12,6 +11,7 @@ import * as testimonialsService from "../../services/testimonialService";
 import config from "../../config/config.json";
 import utils from "../../utils/uploadUtils";
 import logger from "../../services/logService";
+import Joi from '../../services/validationService';
 
 class FrmTestimonial extends Form {
   state = {
@@ -29,7 +29,7 @@ class FrmTestimonial extends Form {
     preview: null,
   };
 
-  schema = {
+  schema = Joi.object({
     code: Joi.string().required().label("Code"),
     firstName: Joi.string().required().min(3).max(100).label("Nombre"),
     lastName: Joi.string().required().min(3).max(100).label("Apellidos"),
@@ -37,15 +37,15 @@ class FrmTestimonial extends Form {
     message: Joi.string().required().min(10).max(500).label("Commentario"),
     email: Joi.string().optional().max(100).label("Email"),
     photo: Joi.object({
-      image: Joi.binary()
-        .encoding("base64")
+      image: Joi.string()
+        .base64()
         .max(config.upload.maxSize)
         .label("Photo"),
       format: Joi.string()
         .required()
         .regex(/^.?(gif|jpe?g|tiff?|png|webp|bmp)$/i, "Solo son aceptos ficheros con formato de imagen"),
     }),
-  };
+  });
 
   customStyles = {
     content: {
@@ -72,7 +72,6 @@ class FrmTestimonial extends Form {
       data.code = id;
       this.setState({ data });
       data.email = result.data.email;
-      logger.log(data);
     } catch (error) {
 
       const {status, data} = error.response;      
@@ -167,10 +166,13 @@ class FrmTestimonial extends Form {
   }
 
   validatePhotoProperty = (file, format) => {
-    const obj = { photo: { ["image"]: file, ["format"]: format } };
-    const schema = { ["photo"]: this.schema["photo"] };
+    if (!this.schema) return;
 
-    const { error } = Joi.validate(obj, schema);
+    const obj = { ["photo"]: { ["image"]: file, ["format"]: format } };
+    const rule = this.schema.extract('photo');
+    const schema = Joi.object({ ["photo"]: rule });
+
+    const { error } = schema.validate(obj, { errors: { language: 'es' }});
 
     return error ? error.details[0].message : null;
   };

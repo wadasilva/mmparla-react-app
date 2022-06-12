@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import Joi from 'joi-browser';
 import Map from '../Map';
 import Form from '../common/form';
 import Input from '../common/input';
 import Textarea from '../common/textarea';
 import * as contactService from '../../services/contactService';
 import { toast } from 'react-toastify';
+import logger from '../../services/logService';
+import Joi from '../../services/validationService';
 
 class ContactBlock extends Form {
     initialState = {
@@ -21,13 +22,13 @@ class ContactBlock extends Form {
 
     state = this.initialState;
     
-    schema = {
+    schema = Joi.object({
         name: Joi.string().required().min(3).max(100).label('Nombre'),
-        email: Joi.string().required().email().label('Email'),
+        email: Joi.string().required().email({ tlds: {allow: false} }).label('Email'),
         subject: Joi.string().optional().max(50).label('Asunto'),
         message: Joi.string().optional().min(10).max(500).label('Comentario'),
         sendCopy: Joi.bool().optional().label('Enviar Copia'),
-    };
+    });
 
     renderInput(name, label, { type = "text", isReadonly = false, placeholder = '' } = {}) {
         const { data, errors } = this.state;
@@ -73,11 +74,11 @@ class ContactBlock extends Form {
     doSubmit = async () => {
         try {
             await contactService.sendMessage(this.state.data);
-            toast.success('Message sent succesfully!');
+            toast.success('Mensaje enviada con exito!');
 
             this.setState(this.initialState);
         } catch (error) {
-            console.log(error);
+            logger.log(error);
         }
     };
 
