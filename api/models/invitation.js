@@ -7,7 +7,7 @@ const schema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "expired", "finished"],
+    enum: ["pending", "expired", "finished", "revoked"],
     default: "pending",
   },
   createAt: {

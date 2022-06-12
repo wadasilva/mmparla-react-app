@@ -4,6 +4,10 @@ export function getInvitation(id) {
   return http.get(`/testimonials/invite/${id}`);
 }
 
+export function revokeInvitation(id) {
+  return http.get(`/testimonials/revoke/${id}`);
+}
+
 export function sendInvitation(data) {
   return http.post("/testimonials/invite", data);
 }

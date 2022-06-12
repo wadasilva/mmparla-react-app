@@ -11,6 +11,7 @@ import FrmTestimonial from "./components/admin/FrmTestimonial";
 import Gallery from "./components/admin/FrmGallery";
 import FrmLogin from "./components/FrmLogin";
 import FrmLogout from "./components/frmLogout";
+import FrmRevoke from "./components/FrmRevoke";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
@@ -33,6 +34,7 @@ root.render(
             element={<ProtectedRoute component={FrmInvitation} />}
           />
           <Route path="/testimonial/:code" element={<FrmTestimonial />} />
+          <Route path="/testimonial/revoke/:code" element={<FrmRevoke />} />
           <Route path="/galleries" element={<Gallery />} />
           <Route path="/auth" element={<FrmLogin />} />
           <Route path="/logout" element={<FrmLogout />} />

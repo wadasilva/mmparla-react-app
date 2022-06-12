@@ -58,7 +58,11 @@ router.post("/", async (req, res) => {
 
     const invitation = await Invitation.findOne({ _id: req.body.code });
 
-    if (!invitation || invitation?.status === "finished") {
+    if (
+      !invitation ||
+      invitation?.status === "finished" ||
+      invitation?.status === "revoked"
+    ) {
       logger.error("invitation is finished");
       return res.status(403).send("Codigo invalido");
     }
@@ -76,6 +80,7 @@ router.post("/", async (req, res) => {
       {
         email: req.body.email.split("@")[0],
         endpoint: config.get("webAppUrl"),
+        logoUrl: `${config.get("webAppUrl")}/images/parla.png`,
       }
     );
 
@@ -148,9 +153,32 @@ router.get("/invite/:code", async (req, res) => {
   } catch (error) {
     logger.error(error);
     sentryLogger.log(error);
+    return res.status(500).send(error);
   }
 
   return res.status(200).send(invitation);
+});
+
+router.get("/revoke/:code", async (req, res) => {
+  try {
+    const invitation = await Invitation.findOne({ _id: req.params.code });
+    if (
+      !invitation ||
+      invitation.status === "finished" ||
+      invitation.status === "revoked"
+    ) {
+      return res.status(404).send("Codigo invalido");
+    }
+
+    invitation.status = "revoked";
+    await invitation.save();
+  } catch (error) {
+    logger.error(JSON.stringify(error));
+    sentryLogger.log(error);
+    return res.status(500).send(error);
+  }
+
+  return res.status(204).send();
 });
 
 router.post("/invite", auth, async (req, res) => {
@@ -185,7 +213,8 @@ router.post("/invite", auth, async (req, res) => {
       "testimonial-invitation.hbs",
       {
         email: req.body.email.split("@")[0],
-        endpoint: `${config.get("webAppUrl")}/testimonial/${invitation._id}`,
+        endpoint: config.get("webAppUrl"),
+        code: invitation._id,
       }
     );
 
