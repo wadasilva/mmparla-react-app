@@ -72,18 +72,20 @@ router.post("/", auth, async (req, res) => {
     });
 
     await gallery.save();
+
+    //Review this line later, maybe it's a good idea to extract a repository to remove duplicated queries TODO:
+    const savedGallery = await Gallery.find({ _id: gallery._id });
+    const parsedGallery = await parseGallery(savedGallery);
+    //Review this line later, maybe it's a good idea to extract a repository to remove duplicated queries TODO:
+    return res.status(200).send(parsedGallery);
   } catch (error) {
     console.log(new Error(error));
     return res.status(500).send();
   }
-
-  return res.status(200).send(gallery);
 });
 
-router.get("/", async (req, res) => {
-  const result = await Gallery.find();
-
-  const galleries = await result.map((gallery) => {
+function parseGallery(data) {
+  return data.map((gallery) => {
     return {
       id: gallery._id,
       description: gallery.description,
@@ -106,6 +108,11 @@ router.get("/", async (req, res) => {
       }),
     };
   });
+}
+
+router.get("/", async (req, res) => {
+  const result = await Gallery.find();
+  const galleries = await parseGallery(result);
 
   return res.status(200).send(galleries);
 });

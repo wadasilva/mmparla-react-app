@@ -106,7 +106,15 @@ class FrmInvitation extends Form {
       }
       
     } catch (error) {
-      toast.error('Disculpe, algo ha salido mal, intente nuevamente por favor.', { autoClose: 8000 });
+      const {status, data} = error.response;
+      switch (status) {
+        case 409:
+          toast.error(data, { autoClose: 8000 });
+          break;
+        default:
+          toast.error('Disculpe, algo ha salido mal, intente nuevamente por favor.', { autoClose: 8000 });
+          break;
+      }      
     }
   };
 

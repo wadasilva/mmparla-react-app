@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { HashLink } from "react-router-hash-link";
 import { Link } from "react-router-dom";
+import AppContext from '../context/appContext';
 
-const NavBar = ({ user }) => {
+const NavBar = () => {
   const [toggled, setToggled] = useState(0);
+  const {user, testimonial, gallery} = useContext(AppContext);
 
   return (
     <nav
-      className={
-        toggled ? "nav collapsible collapsible--expanded" : "nav collapsible"
-      }
-      onClick={() => setToggled(!toggled)}
-    >
+      className={toggled ? "nav collapsible collapsible--expanded" : "nav collapsible"}
+      onClick={() => setToggled(!toggled)}>
       <Link to="/">
         <img
           src="/images/parla.png"
@@ -37,22 +36,22 @@ const NavBar = ({ user }) => {
             servicios
           </HashLink>
         </li>
-        <li className="nav__item">
+        {gallery.galleryList.length > 0 && (<li className="nav__item">
           <HashLink className="link" smooth to={"/#work-block"}>
             galeria
           </HashLink>
-        </li>
-        <li className="nav__item">
+        </li>)}
+        {testimonial.testimonialList.length > 0 && (<li className="nav__item">
           <HashLink className="link" smooth to={"/#testimonial-block"}>
             testimonial
           </HashLink>
-        </li>
+        </li>)}
         <li className="nav__item">
           <HashLink className="link" smooth to={"/#contact-block"}>
             contacto
           </HashLink>
         </li>
-        {!user && (
+        {!user.currentUser && (
           <li className="nav__item">
             <Link className="link" to={"/auth"}>
               Entrar
@@ -62,7 +61,7 @@ const NavBar = ({ user }) => {
             </Link>
           </li>
         )}
-        {user && (
+        {user.currentUser && (
           <li className="nav__item">
             <Link className="link" to={"/logout"}>
               Sair

@@ -1,20 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getTestimonials, setState as setTestimonialState } from "../../services/testimonialService";
 import TestimonialMedia from "../common/TestimonialMedia";
 import auth from '../../services/authService';
+import AppContext from "../../context/appContext";
 
 const TestimonialsBlock = () => {
-  const [testimonials, setTestimonials] = useState([]);
-
-  const isAuthenticated = auth.getCurrentUser();
-
-  useEffect(() => {
-    async function fetchData() {
-      const { data } = await getTestimonials();
-      setTestimonials(data);
-    }
-    fetchData();
-  }, []);
+  const { testimonial, user } = useContext(AppContext);
 
   const onAccept = async id => updateTestimonialState(id, true);
   const onReject = async id => updateTestimonialState(id, false);
@@ -22,20 +13,20 @@ const TestimonialsBlock = () => {
   const updateTestimonialState = async (id, accept) => {
     const result = await setTestimonialState({ id: id, accepted: accept});
 
-    const oldTestimonials = testimonials;
-    const testimonial = oldTestimonials.filter(item => item._id === id)[0];
-    const index = oldTestimonials.indexOf(testimonial);
+    const oldTestimonials = testimonial.testimonialList;
+    const filteredTestimonial = oldTestimonials.filter(item => item._id === id)[0];
+    const index = oldTestimonials.indexOf(filteredTestimonial);
     
-    testimonial.accepted = accept;    
-    oldTestimonials[index] = testimonial;
+    filteredTestimonial.accepted = accept;    
+    oldTestimonials[index] = filteredTestimonial;
 
-    setTestimonials([...oldTestimonials]);
+    testimonial.setTestimonialList([...oldTestimonials]);
   };
 
-  return (testimonials.length > 0 &&
+  return (testimonial.testimonialList.length > 0 &&
     <section
       id="testimonial-block"
-      className="block block--light-gray testimonial-block"
+      className="block testimonial-block"
     >
       <header className="block__header aos-overflow-hidden">
         <h2 className="block__heading" data-aos="fade-up">
@@ -43,7 +34,7 @@ const TestimonialsBlock = () => {
         </h2>
       </header>
       <div className="grid grid--1x3 container">
-        {testimonials.map((item) => <TestimonialMedia key={item._id} testimonial={item} isAuthenticated={isAuthenticated} onAccept={ () => onAccept(item._id) } onReject={ () => onReject(item._id) } />)}  
+        {testimonial.testimonialList.map((item) => <TestimonialMedia key={item._id} testimonial={item} isAuthenticated={user.currentUser} onAccept={ () => onAccept(item._id) } onReject={ () => onReject(item._id) } />)}  
       </div>
     </section>
   );

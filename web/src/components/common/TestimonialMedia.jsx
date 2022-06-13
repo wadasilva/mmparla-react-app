@@ -2,6 +2,7 @@ import React from 'react';
 
 const TestimonialMedia = ({testimonial, isAuthenticated, onAccept, onReject}) => {
     const {photo} = testimonial?.organization ?? {};
+    const cutName = name => name.length > 0 ? `${name.substring(0, 1)}.` : "";
 
     return (
         <div className="media testimonial">
@@ -15,7 +16,7 @@ const TestimonialMedia = ({testimonial, isAuthenticated, onAccept, onReject}) =>
             <p>{testimonial.message}</p>
           </div>
           <div className="media__footer">
-            <h3 className="media__footer-heading">{testimonial.firstName} {testimonial.lastName}</h3>
+            <h3 className="media__footer-heading">{testimonial.firstName} {cutName(testimonial.lastName).toUpperCase()}</h3>
             <p>{testimonial.rol}</p>
           </div>
           {isAuthenticated && <div className="action-buttons">

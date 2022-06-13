@@ -22,6 +22,7 @@
     "config": "^3.3.6",
     "config-secrets": "^1.0.6",
     "cors": "^2.8.5",
+    "date-format": "^4.0.11",
     "debug": "^2.6.9",
     "express": "^4.17.1",
     "fetch-base64": "^2.1.2",

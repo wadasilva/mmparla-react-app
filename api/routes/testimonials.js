@@ -11,8 +11,9 @@ const templateService = require("../services/templateService");
 const router = express.Router();
 const { logger, sentryLogger } = require("../startup/logging");
 const auth = require("../middleware/auth");
+const verifyUser = require("../middleware/verifyUser");
 
-router.post("/", async (req, res) => {
+router.post("/", verifyUser, async (req, res) => {
   const schema = Joi.object({
     photo: Joi.object({
       image: Joi.string()
@@ -50,7 +51,6 @@ router.post("/", async (req, res) => {
       errors: { language: "es" },
     });
 
-    console.log(validationResult.error);
     if (validationResult.error?.details)
       return res
         .status(400)
@@ -97,7 +97,28 @@ router.post("/", async (req, res) => {
 
     logger.info(`Message sent: ${info.messageId}`);
 
-    return res.status(200).send(testimonial);
+    //Get testimonial as Resource TODO: refactor later
+    let query = Testimonial.find({});
+    query = query.where({ _id: testimonial._id });
+
+    if (!req.user) {
+      query = query.where({ accepted: true });
+    }
+
+    query = query.populate([
+      {
+        path: "invitation",
+        model: "invitation",
+      },
+      {
+        path: "organization",
+        model: "organization",
+      },
+    ]);
+
+    const result = await query.exec();
+    //End Get testimonial as Resource TODO: refactor later
+    return res.status(200).send(result.at(0));
   } catch (err) {
     logger.log(err);
     sentryLogger(err);
@@ -148,7 +169,11 @@ router.get("/invite/:code", async (req, res) => {
   let invitation = null;
   try {
     invitation = await Invitation.findOne({ _id: req.params.code });
-    if (!invitation || invitation.status === "finished")
+    if (
+      !invitation ||
+      invitation.status === "finished" ||
+      invitation.status === "revoked"
+    )
       return res.status(404).send("Codigo invalido");
   } catch (error) {
     logger.error(error);
@@ -191,7 +216,6 @@ router.post("/invite", auth, async (req, res) => {
     errors: { language: "es" },
   });
 
-  console.log(validationResult.error);
   if (validationResult.error?.details)
     return res
       .status(400)
@@ -207,7 +231,12 @@ router.post("/invite", auth, async (req, res) => {
     logger.debug(`creating invitation for ${req.body.email}`);
 
     let invitation = await createInvitationMessage(req.body);
-    if (invitation.status === "finished") return res.status(200).send();
+    if (invitation.status === "finished")
+      return res
+        .status(409)
+        .send(
+          "Ya existe un testimonial con esta organizacion y correo electronico"
+        );
 
     const template = await templateService.compile(
       "testimonial-invitation.hbs",

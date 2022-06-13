@@ -12,6 +12,7 @@ import config from "../../config/config.json";
 import utils from "../../utils/uploadUtils";
 import logger from "../../services/logService";
 import Joi from '../../services/validationService';
+import AppContext from "../../context/appContext";
 
 class FrmTestimonial extends Form {
   state = {
@@ -68,16 +69,16 @@ class FrmTestimonial extends Form {
     try {
       const result = await testimonialsService.getInvitation(id);
       const { data } = this.state;
+      console.log('invitation: ', result);
 
       data.code = id;
       this.setState({ data });
       data.email = result.data.email;
     } catch (error) {
-
       const {status, data} = error.response;      
       if (status === 404) {
         toast.warning(`El recurso que buscas ya no se encuentra disponible.`, { autoClose: 8000 });
-        return this.props.router.navigate('/#testimonial-block', { replace: true });
+        return this.props.router.navigate('/', { replace: true });
       } else {
         logger.error(error);
         toast.error(`Disculpe, algo ha salido mal, intente nuevamente por favor. ${data}`, { autoClose: 8000 });
@@ -88,11 +89,16 @@ class FrmTestimonial extends Form {
   async doSubmit() {
     try {      
       const { status, data } = await testimonialsService.addTestimonial(this.state.data);
+      if (data) {
+        const testimonialList = [...this.context.testimonial.testimonialList];
+        testimonialList.push(data);
+        this.context.testimonial.setTestimonialList(testimonialList);
+      }
 
       if (status === 200) {
         toast.success('Listo! Muchas gracias por tu colaboración!', { autoClose: 8000 });
         return this.props.router.navigate('/#testimonial-block', { replace: true });
-      }      
+      }
     } catch (error) {
       const {status, data} = error.response;      
       logger.log(JSON.stringify(error?.response ?? error));
@@ -108,60 +114,63 @@ class FrmTestimonial extends Form {
 
   render() {
     return (this.state.data.code &&
-      <form
-        className="container"
-        style={{ padding: "10%", display: "flex", flexDirection: "column" }}
-        onSubmit={this.handleSubmit}
-      >
-        <div
-          className="thumnail"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Modal
-            isOpen={this.state.isModalOpen}
-            // onAfterOpen={afterOpenModal}
-            onRequestClose={() => this.setState({ isModalOpen: false })}
-            style={this.customStyles}
-            contentLabel="Set a profile picture"
+      <AppContext.Consumer>
+        { appContext => <form
+            className="container"
+            style={{ padding: "10%", display: "flex", flexDirection: "column" }}
+            onSubmit={this.handleSubmit}
           >
-            <Avatar
-              width={390}
-              height={295}
-              onCrop={this.onCrop}
-              name="photo"
-              id="photo"
-              // onClose={() => this.setState({ isModalOpen: false })}
-              onBeforeFileLoad={this.onBeforeFileLoad}
-              src={this.state.src}
-            />
-            <button type="button" class="btn btn--primary btn--stretched" onClick={ () => this.setState({ isModalOpen: false }) }>Cortar</button>
-          </Modal>
-          <img
-            src={this.state.preview || this.state.src}
-            className="avatar"
-            alt="Gravatar"
-            onClick={() => this.setState({ isModalOpen: true })}
-          />
-          {this.state.errors && (
-            <small
-              style={{ display: "block", marginTop: "10px" }}
-              className="invalid-feedback"
+            <div
+              className="thumnail"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
             >
-              {this.state.errors.photo}
-            </small>
-          )}
-        </div>
-        {this.renderInput("firstName", "Nombre")}
-        {this.renderInput("lastName", "Apellido")}
-        {this.renderInput("email", "Email", { isReadonly: true })}
-        {this.renderInput("rol", "Cargo")}
-        {this.renderTextArea("message", "Comentario")}
-        {this.renderButton("Enviar")}
-      </form>
+              <Modal
+                isOpen={this.state.isModalOpen}
+                // onAfterOpen={afterOpenModal}
+                onRequestClose={() => this.setState({ isModalOpen: false })}
+                style={this.customStyles}
+                contentLabel="Set a profile picture"
+              >
+                <Avatar
+                  width={390}
+                  height={295}
+                  onCrop={this.onCrop}
+                  name="photo"
+                  id="photo"
+                  // onClose={() => this.setState({ isModalOpen: false })}
+                  onBeforeFileLoad={this.onBeforeFileLoad}
+                  src={this.state.src}
+                />
+                <button type="button" className="btn btn--primary btn--stretched" onClick={ () => this.setState({ isModalOpen: false }) }>Cortar</button>
+              </Modal>
+              <img
+                src={this.state.preview || this.state.src}
+                className="avatar"
+                alt="Gravatar"
+                onClick={() => this.setState({ isModalOpen: true })}
+              />
+              {this.state.errors && (
+                <small
+                  style={{ display: "block", marginTop: "10px" }}
+                  className="invalid-feedback"
+                >
+                  {this.state.errors.photo}
+                </small>
+              )}
+            </div>
+            {this.renderInput("firstName", "Nombre")}
+            {this.renderInput("lastName", "Apellido")}
+            {this.renderInput("email", "Email", { isReadonly: true })}
+            {this.renderInput("rol", "Cargo")}
+            {this.renderTextArea("message", "Comentario")}
+            {this.renderButton("Enviar")}
+          </form>
+        }
+      </AppContext.Consumer>
     );
   }
 
@@ -279,5 +288,7 @@ class FrmTestimonial extends Form {
     );
   }
 }
+
+FrmTestimonial.contextType = AppContext;
 
 export default withRouter(FrmTestimonial);

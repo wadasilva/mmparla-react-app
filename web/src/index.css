@@ -158,6 +158,10 @@ a {
   fill: #FFF;
 }
 
+.btn--primary .icon {
+  fill: #FFF;
+}
+
 .icon--small {
   width: 30px;
   height: 30px;
