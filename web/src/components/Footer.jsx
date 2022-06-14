@@ -28,7 +28,7 @@ const Footer = () => {
               <ul className="list list--inline">
                   <li className="list__item"><a href="#about-block">Empresa</a></li>
                   <li className="list__item"><a href="#services-block">Servicios</a></li>
-                  { gallery.galleryList.length > 0 && <li className="list__item"><a href="#work-block">Trabajos</a></li>}
+                  { gallery.galleryList.length > 0 && <li className="list__item"><a href="#work-block">Galeria</a></li>}
                   <li className="list__item"><a href="#brand-block">Marcas</a></li>
                   { testimonial.testimonialList.length > 0 &&  <li className="list__item"><a href="#testimonial-block">Testimonial</a></li>}
                   <li className="list__item"><a href="#contact-block">Contacto</a></li>

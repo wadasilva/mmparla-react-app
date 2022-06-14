@@ -146,7 +146,7 @@ module.exports.send = function (
       const result = await transporter.sendMail(message);
       resolve(result);
     } catch (err) {
-      sentryLogger(err);
+      sentryLogger.log(err);
       reject(err);
     }
   });

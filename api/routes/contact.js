@@ -50,7 +50,7 @@ router.post("/", async (req, res) => {
     const message = new Message(req.body);
     result = await message.save();
   } catch (error) {
-    logger.error(error);
+    logger.error(JSON.stringify(error));
     sentryLogger.log(error);
 
     return res.status(500).send(`Internal server error. ${error}`);

@@ -5,7 +5,6 @@ const fs = require("fs");
 
 module.exports = function () {
   const connectionString = config.get("db"); //mongodb://app:Jusarah%402022@mmparla_db:27017/
-  logger.debug(`connectionString: ${connectionString}`);
   mongoose
     .connect(connectionString, {
       dbName: "mmparla",

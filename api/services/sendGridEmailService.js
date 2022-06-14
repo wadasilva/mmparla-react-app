@@ -89,6 +89,7 @@ module.exports.send = function (
       const result = await sgMail.send(message);
       resolve(result);
     } catch (err) {
+      sentryLogger.log(err);
       reject(err);
     }
   });

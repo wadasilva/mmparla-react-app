@@ -4,11 +4,11 @@
     "webAppUrl": "http://montajedemueblesparla.es",
     "emailService": {
         "smtpHost": "smtp.sendgrid.net",
-        "smtpPort": 25,
+        "smtpPort": 465,
         "smtpUser": "",
         "smtpPassword": "",
         "smtpEmail": "",
-        "smtpSecure": false
+        "smtpSecure": true
     },
     "sendgridService": { 
         "apiKey": "" 
