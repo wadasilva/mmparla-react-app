@@ -5,19 +5,17 @@ services:
     image: mmparla_web:1.0.0-development
     container_name: mmparla_web
     build: ./web
-    extra_hosts:
-      - "wdasilva.ddns.net:127.0.0.1"
     ports:
       - 80:80
     volumes:
       - ./web:/app
+    depends_on:
+      - api
 
   api:
     image: mmparla_api:1.0.0-development
     container_name: mmparla_api
     build: ./api
-    extra_hosts:
-      - "wdasilva-back.ddns.net:127.0.0.1"
     ports:
       - 3000:3000
     #entrypoint: ["node", "index.js", "--host", "0.0.0.0", "--disableHostCheck"]
@@ -42,6 +40,8 @@ services:
       # - jwt_private_key
       # - mmparla_db
       - sendgrid_api_key
+    depends_on:
+      - db
 
   db:
     image: mmparla_db:1.0.0-development

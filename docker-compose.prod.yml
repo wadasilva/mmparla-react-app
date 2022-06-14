@@ -7,10 +7,10 @@ services:
     build: 
       context: ./web
       dockerfile: dockerfile.prod
-    extra_hosts:
-      - "montajedemueblesparla.es:127.0.0.1"
     ports:
       - 80:80
+    depends_on:
+      - api
     restart: unless-stopped
 
   api:
@@ -19,8 +19,6 @@ services:
     build: 
       context: ./api
       dockerfile: dockerfile.prod
-    extra_hosts:
-      - "montajedemueblesparla.es:127.0.0.1"
     ports:
       - 3000:3000
     environment:
@@ -40,6 +38,8 @@ services:
       - jwt_private_key
       - mmparla_db
       - sendgrid_api_key
+    depends_on:
+      - db
     restart: unless-stopped
 
   db:

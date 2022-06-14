@@ -19,4 +19,4 @@ ENV NODE_ENV=production
 ENV jwt_private_key=/run/secrets/jwt_private_key
 # ENV mmparla_db=/run/secrets/mmparla_db
 EXPOSE 3000
-CMD ["nodemon", "-L", "--watch", ".", "index.js", "--host", "0.0.0.0", "--disableHostCheck"]
+CMD ["node", "index.js", "&"]
