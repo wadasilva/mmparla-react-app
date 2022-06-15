@@ -23,7 +23,7 @@ describe('/api/testimonials', () => {
 
     describe('/POST', () => {
         beforeEach(async () => {
-            server = require('../../index');
+            ;({ httpServer: server} = require('../../index'));
 
             testimonial = new Testimonial(testimonialMocks.dbTestimonial);
             await testimonial.save();

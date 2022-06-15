@@ -3,11 +3,13 @@ require("./startup/folders")();
 const starttupDebugger = require("debug")("app:startup");
 const express = require("express");
 const app = express();
-const fs = require("fs");
+const http = require("http");
 const https = require("https");
+const fs = require("fs");
 const morgan = require("morgan");
 const { logger, sentryLogger } = require("./startup/logging");
 const emailService = require("./services/nodemailerEmailService");
+const httpsRedirect = require('./middleware/httpsRedirect');
 
 if (!config.get("jwtPrivateKey")) {
   sentryLogger.log("FATAL ERROR: jwtPrivateKey is not defined.");
@@ -18,26 +20,38 @@ if (!config.get("jwtPrivateKey")) {
 // hook morganBody to express app
 app.use(morgan("combined"));
 morgan(app, { logAllReqHeader: true, maxBodyLength: 5000 });
-
-require("./startup/routes")(app);
-require("./startup/db")();
-
-if (process.env.NODE_ENV === "production") {
-  require("./startup/prod")(app);
-}
+app.use(httpsRedirect);
 
 //Initialize Services that need initialization
 sentryLogger.init();
 emailService.init();
 
-const port = process.env.PORT || 3000;
-const server = app.listen(port, "0.0.0.0", true, () =>
-  console.log(`Listening on port ${port}...`)
-);
-// const server = https.createServer({
-//     key: fs.readFileSync('selfsigned.key'),
-//     cert: fs.readFileSync('selfsigned.pem'),
-//     enableTrace: true
-// }, app).listen(port, "0.0.0.0", () => console.log(`Listening on port ${port}...`));
+if (process.env.NODE_ENV === "production") {
+  require("./startup/prod")(app);
+}
 
-module.exports = server;
+require("./startup/routes")(app);
+require("./startup/db")();
+
+let options = {};
+try {
+  options = {
+    key: fs.readFileSync("/run/secrets/api_selfsigned.key", { encoding: "utf-8" }),
+    cert: fs.readFileSync("/run/secrets/api_selfsigned.crt", { encoding: "utf-8" }),
+    enableTrace: false,
+  };
+} catch (err) {
+  sentryLogger.log(`FATAL ERROR: FATAL ERROR: could not config ssl for the app. ${JSON.stringify(err)}`);
+  logger.error(`FATAL ERROR: FATAL ERROR: could not config ssl for the app. ${JSON.stringify(err)}`);
+
+  if (process.env.NODE_ENV === 'production')
+    process.exit(1);
+}
+
+const port = process.env.PORT || 3000;
+httpServer = http.createServer(app).listen(port, "0.0.0.0", true, () => logger.info(`Listening on port ${port}...`));
+
+const httpsPort = process.env.HTTPS_PORT || 3443;
+httpsServer = https.createServer(options, app).listen(httpsPort, "0.0.0.0", true, () => logger.info(`Listening on https port ${httpsPort}...`));
+
+module.exports = { httpServer, httpsServer };

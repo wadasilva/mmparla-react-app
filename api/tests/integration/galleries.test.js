@@ -18,7 +18,7 @@ describe('/api/galleries', () => {
 
     describe('/POST', () => {
         beforeEach(async () => {
-            server = require('../../index');
+            ;({ httpServer: server } = require('../../index'));
 
             gallery = new Gallery(galleryMocks.dbGallery);
             await gallery.save();
@@ -128,7 +128,7 @@ describe('/api/galleries', () => {
 
     describe('/GET', () => {
         beforeEach(async () => {
-            server = require('../../index');
+            ;({ httpServer: server } = require('../../index'));
 
             gallery = new Gallery(galleryMocks.dbGallery);
             await gallery.save();
