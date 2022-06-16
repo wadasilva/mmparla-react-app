@@ -6,7 +6,7 @@ services:
     container_name: mmparla_web
     build: 
       context: ./web
-      dockerfile: dockerfile.prod
+      dockerfile: Dockerfile.prod
     ports:
       - 80:80
     depends_on:
@@ -18,7 +18,7 @@ services:
     container_name: mmparla_api
     build: 
       context: ./api
-      dockerfile: dockerfile.prod
+      dockerfile: Dockerfile.prod
     ports:
       - 3000:3000
       - 3443:3443
@@ -50,7 +50,7 @@ services:
     container_name: mmparla_db
     build:
       context: ./api
-      dockerfile: dockerfile.mongo.prod
+      dockerfile: Dockerfile.mongo.prod
     ports:
       - 27017:27017
     volumes:
