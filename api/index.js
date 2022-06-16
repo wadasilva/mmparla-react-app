@@ -11,6 +11,10 @@ const { logger, sentryLogger } = require("./startup/logging");
 const emailService = require("./services/nodemailerEmailService");
 const httpsRedirect = require('./middleware/httpsRedirect');
 
+//Initialize Services that need initialization
+sentryLogger.init();
+emailService.init();
+
 if (!config.get("jwtPrivateKey")) {
   sentryLogger.log("FATAL ERROR: jwtPrivateKey is not defined.");
   logger.error("FATAL ERROR: jwtPrivateKey is not defined.");
@@ -20,11 +24,10 @@ if (!config.get("jwtPrivateKey")) {
 // hook morganBody to express app
 app.use(morgan("combined"));
 morgan(app, { logAllReqHeader: true, maxBodyLength: 5000 });
-app.use(httpsRedirect);
 
-//Initialize Services that need initialization
-sentryLogger.init();
-emailService.init();
+const port = process.env.PORT || 3000;
+const httpsPort = process.env.HTTPS_PORT || 3443;
+app.use(httpsRedirect(httpsPort));
 
 if (process.env.NODE_ENV === "production") {
   require("./startup/prod")(app);
@@ -48,10 +51,8 @@ try {
     process.exit(1);
 }
 
-const port = process.env.PORT || 3000;
-httpServer = http.createServer(app).listen(port, "0.0.0.0", true, () => logger.info(`Listening on port ${port}...`));
 
-const httpsPort = process.env.HTTPS_PORT || 3443;
+httpServer = http.createServer(app).listen(port, "0.0.0.0", true, () => logger.info(`Listening on port ${port}...`));
 httpsServer = https.createServer(options, app).listen(httpsPort, "0.0.0.0", true, () => logger.info(`Listening on https port ${httpsPort}...`));
 
 module.exports = { httpServer, httpsServer };
