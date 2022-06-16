@@ -18,5 +18,5 @@ ENV NODE_ENV=production
 # ENV smtp_password=/run/secrets/smtp_password
 ENV jwt_private_key=/run/secrets/jwt_private_key
 # ENV mmparla_db=/run/secrets/mmparla_db
-EXPOSE 3000
+EXPOSE 3000 3443
 CMD ["node", "index.js", "&"]
