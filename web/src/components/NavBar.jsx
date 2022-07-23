@@ -18,8 +18,8 @@ const NavBar = () => {
           className="nav__brand"
         />
       </Link>
-      <a href="tel:+34-631-93-98-20" className="nav_phone">
-        +34 631 93 98 20
+      <a href="tel:+34-654-15-39-44" className="nav_phone">
+        +34 654 15 39 44
       </a>
       <svg className="icon icon--primary nav__toggler">
         ºº
@@ -40,12 +40,17 @@ const NavBar = () => {
           <HashLink className="link" smooth to={"/#work-block"}>
             galeria
           </HashLink>
-        </li>)}
+        </li>)}        
         {testimonial.testimonialList.length > 0 && (<li className="nav__item">
           <HashLink className="link" smooth to={"/#testimonial-block"}>
             testimonial
           </HashLink>
         </li>)}
+        <li className="nav__item">
+          <HashLink className="link" smooth to={"/#brand-block"}>
+            marcas
+          </HashLink>
+        </li>
         <li className="nav__item">
           <HashLink className="link" smooth to={"/#contact-block"}>
             contacto

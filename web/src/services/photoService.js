@@ -16,7 +16,7 @@ export function parseImages(data) {
     images = data.map((image) => {
       return {
         id: image.id,
-        url: `${config.apiUrl}/${image.url}`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/${image.url}`,
         description: image.description,
         format: image.format,
         breakpoints: image.breakpoints
@@ -24,7 +24,10 @@ export function parseImages(data) {
             return {
               format: breakpoint.format,
               breakpoint: breakpoint.images
-                .map((image) => `${config.apiUrl}/${image.url} ${image.width}w`)
+                .map(
+                  (image) =>
+                    `${process.env.REACT_APP_BACKEND_URL}/${image.url} ${image.width}w`
+                )
                 .join(","),
             };
           })

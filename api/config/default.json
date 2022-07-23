@@ -24,5 +24,6 @@
     "sentryService": {
         "dsn": "https://ca41d76386e24d4284383ba22e88aefd@o1237225.ingest.sentry.io/6443107"
     },
-    "jwtPrivateKey": "myPrivateKey"
+    "jwtPrivateKey": "myPrivateKey",
+    "domain": "wdasilva.ddns.net"
 }

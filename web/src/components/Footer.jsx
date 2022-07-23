@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { HashLink } from "react-router-hash-link";
 import {getCurrentTime} from '../services/utilitiesService';
 import logger from '../services/logService';
 import AppContext from '../context/appContext';
@@ -26,12 +27,12 @@ const Footer = () => {
           <div className="container">
               <h3 className="copyright">Montajes Parla - Copyright {currentYear}</h3>
               <ul className="list list--inline">
-                  <li className="list__item"><a href="#about-block">Empresa</a></li>
-                  <li className="list__item"><a href="#services-block">Servicios</a></li>
-                  { gallery.galleryList.length > 0 && <li className="list__item"><a href="#work-block">Galeria</a></li>}
-                  <li className="list__item"><a href="#brand-block">Marcas</a></li>
-                  { testimonial.testimonialList.length > 0 &&  <li className="list__item"><a href="#testimonial-block">Testimonial</a></li>}
-                  <li className="list__item"><a href="#contact-block">Contacto</a></li>
+                  <li className="list__item"><HashLink smooth to={"/#about-block"}>Empresa</HashLink></li>
+                  <li className="list__item"><HashLink smooth to={"/#services-block"}>Servicios</HashLink></li>
+                  { gallery.galleryList.length > 0 && <li className="list__item"><HashLink smooth to={"/#work-block"}>Galeria</HashLink></li>}
+                  { testimonial.testimonialList.length > 0 &&  <li className="list__item"><HashLink smooth to={"/#testimonial-block"}>Testimonial</HashLink></li>}
+                  <li className="list__item"><HashLink smooth to={"/#brand-block"}>Marcas</HashLink></li>
+                  <li className="list__item"><HashLink smooth to={"/#contact-block"}>Contacto</HashLink></li>
               </ul>
               <div className="footer__followus">
                   <p>Siguenos en</p>

@@ -95,7 +95,7 @@ class ContactBlock extends Form {
                         <p className="contact-address__text">C/ Juan Ramón Jiménez, 31 Esc. Derecha, 5º Pta 18 46006 Valencia</p>
                         
                         <h3 className="contact-address__heading">Llámanos o escribenos un WhatsApp a:</h3>
-                        <a href="tel:+34-631-93-98-20" className="contact-address__phone">+34 631 93 98 20</a>
+                        <a href="tel:+34-654-15-39-44" className="contact-address__phone">+34 654 15 39 44</a>
                     </div>
                     <Map />
                 </div>

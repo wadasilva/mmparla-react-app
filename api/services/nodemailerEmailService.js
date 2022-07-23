@@ -1,4 +1,4 @@
-const config = require("config-secrets");
+const config = require("config");
 const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 const fs = require("fs");

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const config = require("config-secrets");
+const config = require("config");
 const { logger } = require("./logging");
 const fs = require("fs");
 

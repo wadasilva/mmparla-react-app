@@ -1,6 +1,6 @@
 const express = require("express");
 const isBase64 = require("is-base64");
-const config = require("config-secrets");
+const config = require("config");
 const messages = require("../translation/validation-translations");
 const Joi = require("joi").defaults((schema) => schema.options({ messages }));
 const Testimonial = require("../models/testimonial");

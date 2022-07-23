@@ -5,7 +5,7 @@ const messages = require("../translation/validation-translations");
 const Joi = require("joi").defaults((schema) => schema.options({ messages }));
 const Message = require("../models/Message");
 const emailService = require("../services/nodemailerEmailService");
-const config = require("config-secrets");
+const config = require("config");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(100).required(),
@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
     if (req.body.sendCopy === true) {
       options.cc = req.body.email;
     }
-
+    
     const info = await emailService.send(
       config.get("emailService.smtpEmail"),
       config.get("emailService.smtpEmail"),

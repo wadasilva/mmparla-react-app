@@ -26,7 +26,7 @@ class Form extends Component {
     const rule = this.schema.extract(name);
     const schema = Joi.object({ [name]: rule });
     const { error } = schema.validate(obj, {
-      errors: { language: "es" },
+      errors: { language: "es" }
     });
 
     return error ? error.details[0].message : null;

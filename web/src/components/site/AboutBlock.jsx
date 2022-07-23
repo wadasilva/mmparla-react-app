@@ -14,7 +14,7 @@ const AboutBlock = () => {
                 </picture>
                 <div className="about__text" data-aos="fade-left" data-aos-duration="800">
                     <p>En la actualidad, existe una demanda creciente de servicios de reparto como consecuencia del aumento de ventas, especialmente online. Por este motivo, el sector de la logística se está convirtiendo en uno de los pilares de la economía, obligado a reinventarse continuamente para adaptarse a las necesidades del mercado.</p>
-                    <p>MM Parla cuenta con más de 10 años de experiencia en montaje, traslado, reparación, reparto y reciclaje de muebles y un equipo consolidado y en constante formación para poder adaptarse a estos cambios.</p>
+                    <p>Montaje de Muebles Parla cuenta con más de 10 años de experiencia en montaje, traslado, reparación, reparto y reciclaje de muebles y un equipo consolidado y en constante formación para poder adaptarse a estos cambios.</p>
                 </div>
             </div>            
         </section>
