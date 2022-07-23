@@ -4,3 +4,6 @@ temp/
 logs/
 .cache/
 secrets/
+data/
+.env.staging
+.env.production
