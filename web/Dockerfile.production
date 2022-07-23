@@ -1,0 +1,52 @@
+# Step 1: Build stage
+FROM node:16.15.0-alpine3.15 AS build-stage
+RUN mkdir /app
+WORKDIR /app
+COPY package*.json ./
+
+#Adds env-cmd to build app acordingly to environments
+RUN npm install env-cmd --save
+
+RUN npm install
+COPY . ./
+RUN npm run build
+
+#Step 2: Production
+FROM nginx:1.22.0-alpine
+
+#Copy files - Should be immediatelly copied after pull nginx:1.22.0-alpine image, otherwise will throw a timeout error
+COPY ./init-create-nodecert-group.sh /etc
+COPY ./entrypoint.sh /etc
+COPY --from=build-stage /app/build /usr/share/nginx/html
+
+#Install packages
+RUN apk update 
+RUN apk add sudo
+RUN apk add --update python3 py3-pip
+RUN apk add certbot
+RUN pip install certbot-nginx
+RUN apk add --no-cache bash
+
+# nginx web server config
+RUN rm /etc/nginx/conf.d/default.conf 
+RUN rm /etc/nginx/nginx.conf
+
+COPY ./nginx/production/default.conf /etc/nginx/conf.d
+COPY ./nginx/nginx.conf /etc/nginx/
+
+RUN chown -R nginx:nginx /etc/nginx/conf.d
+RUN chown -R nginx:nginx /usr/share/nginx/html 
+RUN chmod -R 755 /usr/share/nginx/html 
+RUN chown -R nginx:nginx /var/cache/nginx 
+RUN chown -R nginx:nginx /var/log/nginx
+
+RUN touch /var/run/nginx.pid 
+RUN chown -R nginx:nginx /var/run/nginx.pid
+
+USER nginx
+
+ENV PORT=80 
+ENV NODE_ENV=production
+EXPOSE 80
+ENTRYPOINT [ "nginx", "-g", "daemon off;"]
+# ENTRYPOINT [ "/etc/entrypoint.sh"]

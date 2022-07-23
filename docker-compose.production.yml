@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+
+  web:
+    image: mmparla_web:1.0.0-production
+    container_name: mmparla_web
+    build: 
+      context: ./web
+      dockerfile: Dockerfile.production
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - api
+    restart: unless-stopped
+    volumes:
+      - /etc/data/certbot/conf/:/etc/letsencrypt
+      - /etc/data/certbot/www/:/var/www/certbot
+    environment:
+      - NODE_ENV=production
+  api:
+    image: mmparla_api:1.0.0-production
+    container_name: mmparla_api
+    build: 
+      context: ./api
+      dockerfile: Dockerfile.production
+    ports:
+      - 3000:3000
+      - 3443:3443
+    depends_on:
+      - db
+    restart: unless-stopped
+    volumes:
+      - /etc/data/certbot/conf/:/etc/letsencrypt
+
+  db:
+    image: mmparla_db:1.0.0-production
+    container_name: mmparla_db
+    build:
+      context: ./api
+      dockerfile: Dockerfile.mongo.production
+    ports:
+      - 27017:27017
+    volumes:
+      - /etc/data/db:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME:app
+      - MONGO_INITDB_ROOT_PASSWORD:Mmparla@2022
+    restart: unless-stopped

@@ -1,7 +1,7 @@
 {
-    "name": "Montaje de Muebles Parla - Production",
+    "name": "Montaje de Muebles Parla - Staging",
     "db": "",
-    "webAppUrl": "http://www.montajedemueblesparla.es",
+    "webAppUrl": "http://staging.montajedemueblesparla.es",
     "emailService": {
         "smtpHost": "smtp.sendgrid.net",
         "smtpPort": 465,
@@ -17,5 +17,5 @@
         "dsn": "https://ca41d76386e24d4284383ba22e88aefd@o1237225.ingest.sentry.io/6443107"
     },
     "jwtPrivateKey": "",
-    "domain": "montajedemueblesparla.es"
+    "domain": "staging.montajedemueblesparla.es"
 }

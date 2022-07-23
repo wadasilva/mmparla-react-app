@@ -1,0 +1,33 @@
+# Stepa 1: Build stage
+FROM node:16.15.0-alpine3.15
+
+#Install packages
+RUN apk update 
+RUN apk add sudo
+RUN apk add openssl
+RUN apk add --no-cache bash
+
+#Add group(s)
+RUN sudo addgroup app 
+
+#Removes previous image node user
+RUN deluser --remove-home node
+
+#Adds user(s)
+RUN sudo adduser -S -G app app
+
+RUN sudo npm i --only=prod -g sharp
+
+COPY ./init-create-nodecert-group.sh /etc
+COPY ./entrypoint.sh /etc
+
+RUN mkdir /app && chown app:app /app
+USER app
+WORKDIR /app
+COPY --chown=app:app package*.json ./
+RUN npm i --only=prod
+
+COPY --chown=app:app . ./
+ENV NODE_ENV=production
+EXPOSE 3000 3443
+ENTRYPOINT ["node", "index.js", "&"]
