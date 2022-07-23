@@ -9,6 +9,8 @@ services:
       - 80:80
     volumes:
       - ./web:/app
+      - ./data/certbot/conf/:/etc/letsencrypt
+      - ./data/certbot/www/:/var/www/certbot
     depends_on:
       - api
 
@@ -22,6 +24,7 @@ services:
     #entrypoint: ["node", "index.js", "--host", "0.0.0.0", "--disableHostCheck"]
     volumes:
       - ./api:/app
+      - ./data/certbot/conf:/etc/letsencrypt
       - node_modules:/app/node_modules
       # - app-data:/app/temp
     environment:
@@ -32,17 +35,15 @@ services:
       # db_user: /run/secrets/db_user
       # db_password: /run/secrets/db_password
       # mmparla_db:
-    secrets:
-      - smtp_user
-      - smtp_password
-      - smtp_email
-      # - db_user
-      # - db_password
-      # - jwt_private_key
-      # - mmparla_db
-      - sendgrid_api_key
-      - api_selfsigned.key
-      - api_selfsigned.crt
+    # secrets:
+    #   - smtp_user
+    #   - smtp_password
+    #   - smtp_email
+    #   # - db_user
+    #   # - db_password
+    #   # - jwt_private_key
+    #   # - mmparla_db
+    #   - sendgrid_api_key
     depends_on:
       - db
 
@@ -51,11 +52,11 @@ services:
     container_name: mmparla_db
     build:
       context: .
-      dockerfile: ./api/dockerfile.mongo
+      dockerfile: ./api/Dockerfile.mongo
     ports:
       - 27017:27017
     volumes:
-      - mmparla:/data/db
+      - /etc/data/db:/data/db
     # environment:
       # MONGO_INITDB_ROOT_USERNAME_FILE: /run/secrets/db_user
       # MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/db_password
@@ -64,27 +65,22 @@ services:
     #  - db_password
 
 volumes:
-  mmparla:
   node_modules: # app-data:
 
-secrets:
-  smtp_user:
-    file: ./secrets/smtp_user
-  smtp_password:
-    file: ./secrets/smtp_password
-  smtp_email:
-    file: ./secrets/smtp_email
-  mmparla_db:
-    file: ./secrets/mmparla_db
-  db_user:
-    file: ./secrets/db_user
-  db_password:
-    file: ./secrets/db_password
-  jwt_private_key:
-    file: ./secrets/jwt_private_key
-  sendgrid_api_key:
-    file: ./secrets/sendgrid_api_key
-  api_selfsigned.key:
-    file: ./secrets/api_selfsigned.key
-  api_selfsigned.crt:
-    file: ./secrets/api_selfsigned.crt
+# secrets:
+#   smtp_user:
+#     file: ./secrets/development/smtp_user
+#   smtp_password:
+#     file: ./secrets/development/smtp_password
+#   smtp_email:
+#     file: ./secrets/development/smtp_email
+#   mmparla_db:
+#     file: ./secrets/development/mmparla_db
+#   db_user:
+#     file: ./secrets/development/db_user
+#   db_password:
+#     file: ./secrets/development/db_password
+#   jwt_private_key:
+#     file: ./secrets/development/jwt_private_key
+#   sendgrid_api_key:
+#     file: ./secrets/development/sendgrid_api_key

@@ -1,9 +1,16 @@
 FROM node:16.15.0-alpine3.15
-RUN apk update && apk add sudo
 RUN addgroup app && adduser -S -G app app
 
-#Installing curl to test API endpoints
+#Install packages
+RUN apk update 
+RUN apk add sudo
 RUN apk --no-cache add curl
+RUN apk add --update python3 py3-pip
+RUN apk add certbot
+RUN pip install certbot-nginx
+RUN apk add --no-cache bash
+
+COPY ./init-create-nodecert-group.sh /etc
 
 RUN mkdir /app && chown app:app /app
 # RUN npm i nodemon -g --save-dev
