@@ -92,7 +92,7 @@ class ContactBlock extends Form {
                 <div className="contact__address" data-aos="fade-right">
                     <div className="address__text">
                         <h3 className="contact-address__heading">Visitanos en</h3>
-                        <p className="contact-address__text">C/ Juan Ramón Jiménez, 31 Esc. Derecha, 5º Pta 18 46006 Valencia</p>
+                        <p className="contact-address__text">C/ Juan Ramón Jiménez, 31 Esc. Derecha, 5º Pta 18 46006 Malilla/Valencia</p>
                         
                         <h3 className="contact-address__heading">Llámanos o escribenos un WhatsApp a:</h3>
                         <a href="tel:+34-654-15-39-44" className="contact-address__phone">+34 654 15 39 44</a>
